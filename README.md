@@ -1,73 +1,142 @@
-# React + TypeScript + Vite
+# AP Intake - Quote Request Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern single-page web application built with Vite, React, TypeScript, Tailwind CSS, and shadCN UI for collecting customer quote requests.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✨ Modern, responsive UI with shadCN components
+- 🎨 Tailwind CSS for styling
+- 📝 Form handling for customer quote requests
+- 🔌 API integration ready for N8N and Google services
+- 🚀 Fast development with Vite and HMR
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Vite** - Build tool and dev server
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first CSS
+- **shadCN UI** - Component library
+- **Axios** - HTTP client for API requests
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18+ and npm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Copy the environment variables file:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Update the `.env` file with your API credentials:
+   - `VITE_N8N_WEBHOOK_URL` - Your N8N webhook URL
+   - `VITE_GOOGLE_API_KEY` - Your Google API key (if using)
+   - `VITE_GOOGLE_CLIENT_ID` - Your Google OAuth client ID (if using)
+
+### Development
+
+Start the development server:
+
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The application will be available at `http://localhost:5173`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Build for production:
+
+```bash
+npm run build
 ```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+ap-intake/
+├── src/
+│   ├── components/
+│   │   └── ui/           # shadCN UI components
+│   ├── lib/
+│   │   ├── api-client.ts # Axios configuration
+│   │   └── utils.ts      # Utility functions
+│   ├── services/
+│   │   ├── n8n.service.ts    # N8N API integration
+│   │   └── google.service.ts # Google API integration
+│   ├── App.tsx           # Main form component
+│   ├── index.css         # Global styles with Tailwind
+│   └── main.tsx          # Application entry point
+├── .env.example          # Environment variables template
+└── package.json
+```
+
+## API Integration
+
+### N8N Integration
+
+The application includes utilities for submitting data to N8N webhooks. Update your webhook URL in `.env`:
+
+```typescript
+import { submitToN8N } from './services/n8n.service';
+
+// Submit form data to N8N
+await submitToN8N(formData);
+```
+
+### Google API Integration
+
+Helper functions are provided for Google services (Drive, Gmail, Calendar). Configure your Google API credentials in `.env`:
+
+```typescript
+import { uploadToGoogleDrive, sendGmailEmail } from './services/google.service';
+
+// Upload file to Google Drive
+await uploadToGoogleDrive(file);
+
+// Send email via Gmail
+await sendGmailEmail({ to, subject, body });
+```
+
+## Form Fields
+
+The quote request form includes:
+- Company Name
+- Contact Name
+- Email
+- Phone Number
+- Project Name
+- Project Description
+- Desired Due Date
+- File Upload (supports .pdf, .step, .stp, .igs, .iges, .dxf, .zip)
+
+## Customization
+
+### Styling
+
+Tailwind CSS and shadCN provide extensive customization options. Modify:
+- `tailwind.config.js` - Tailwind theme configuration
+- `src/index.css` - CSS variables for shadCN components
+
+### Components
+
+Add more shadCN components as needed by manually creating component files in `src/components/ui/`
+
+## License
+
+MIT
