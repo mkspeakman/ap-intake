@@ -15,7 +15,7 @@ export default defineConfig({
       '/api': {
         target: 'https://speakhost.app.n8n.cloud',
         changeOrigin: true,
-        rewrite: (path) => '/webhook-test/project-submission',
+        rewrite: () => '/webhook-test/project-submission',
       },
     },
   },
