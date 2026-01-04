@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const webhookURL = 'https://speakhost.app.n8n.cloud/webhook-test/project-submission';
+    const webhookURL = 'https://speakhost.app.n8n.cloud/webhook/project-submission';
     
     // Convert request to a readable stream and forward to n8n
     const response = await fetch(webhookURL, {
