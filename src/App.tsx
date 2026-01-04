@@ -12,10 +12,10 @@ import { CertificationSection } from '@/components/form-sections/CertificationSe
 import { FileUploadSection } from '@/components/form-sections/FileUploadSection';
 
 // Use proxy path for local development to avoid CORS issues
-// In production, update this to the direct webhook URL
+// In production (Vercel), use Vercel serverless function
 const WEBHOOK_URL = import.meta.env.DEV 
   ? '/api'
-  : 'https://speakhost.app.n8n.cloud/webhook-test/project-submission';
+  : '/api/webhook';
 
 export default function ManufacturingIntakeForm() {
   const [form, setForm] = useState({
