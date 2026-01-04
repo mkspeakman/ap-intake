@@ -16,6 +16,7 @@ export default async function handler(req, res) {
         'Content-Type': req.headers['content-type'],
       },
       body: Readable.from(req),
+      duplex: 'half',
     });
 
     const data = await response.text();
