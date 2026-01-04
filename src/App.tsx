@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, AlertCircle } from 'lucide-react';
-import { submitQuoteRequest } from '@/services/database.service';
-import type { QuoteRequestSubmission } from '@/types/database.types';
 import { CompanyContactSection } from '@/components/form-sections/CompanyContactSection';
 import { ProjectInformationSection } from '@/components/form-sections/ProjectInformationSection';
 import { MaterialRequirementsSection } from '@/components/form-sections/MaterialRequirementsSection';
@@ -12,6 +10,12 @@ import { QuantityTimelineSection } from '@/components/form-sections/QuantityTime
 import { PartRequirementsSection } from '@/components/form-sections/PartRequirementsSection';
 import { CertificationSection } from '@/components/form-sections/CertificationSection';
 import { FileUploadSection } from '@/components/form-sections/FileUploadSection';
+
+// Use proxy path for local development to avoid CORS issues
+// In production, update this to the direct webhook URL
+const WEBHOOK_URL = import.meta.env.DEV 
+  ? '/api'
+  : 'https://speakhost.app.n8n.cloud/webhook-test/project-submission';
 
 export default function ManufacturingIntakeForm() {
   const [form, setForm] = useState({
@@ -116,64 +120,90 @@ export default function ManufacturingIntakeForm() {
     setSubmitStatus({ type: null, message: '' });
 
     try {
-      // Prepare file metadata (only filenames and extensions)
-      const fileMetadata = form.files.map((file) => ({
-        filename: file.name,
-        file_extension: file.name.substring(file.name.lastIndexOf('.')),
-        file_size_bytes: file.size,
-      }));
+      // Create FormData for multipart/form-data submission
+      const formData = new FormData();
+      
+      // Add form fields
+      formData.append('companyName', form.companyName);
+      formData.append('contactName', form.contactName);
+      formData.append('email', form.email);
+      formData.append('phone', form.phone);
+      formData.append('projectName', form.projectName);
+      formData.append('description', form.description);
+      formData.append('materials', JSON.stringify(form.materials));
+      formData.append('finishes', JSON.stringify(form.finishes));
+      formData.append('quantity', form.quantity);
+      formData.append('leadTime', form.leadTime);
+      formData.append('partNotes', form.partNotes);
+      formData.append('certifications', JSON.stringify(form.certifications));
+      
+      // Add files
+      form.files.forEach((file, index) => {
+        console.log(`Adding file ${index}:`, file.name, file.type, file.size, 'bytes');
+        formData.append('files', file);
+      });
 
-      // Prepare submission payload
-      const submissionData: QuoteRequestSubmission = {
-        companyName: form.companyName,
-        contactName: form.contactName,
-        email: form.email,
-        phone: form.phone,
-        projectName: form.projectName,
-        description: form.description,
-        materials: form.materials,
-        finishes: form.finishes,
-        quantity: form.quantity,
-        leadTime: form.leadTime,
-        partNotes: form.partNotes,
-        certifications: form.certifications,
-        files: fileMetadata,
-      };
+      // Log what we're sending (FormData can't be directly logged)
+      console.log('Form data summary:');
+      console.log('- Files:', form.files.length);
+      console.log('- Company:', form.companyName);
+      console.log('- Project:', form.projectName);
 
-      // Submit to database
-      const response = await submitQuoteRequest(submissionData);
+      console.log('Submitting to webhook:', WEBHOOK_URL);
 
-      if (response.success) {
-        setSubmitStatus({
-          type: 'success',
-          message: 'Quote request submitted successfully!',
-          quoteNumber: response.data?.quote_number,
-        });
+      // Submit to webhook
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        body: formData,
+      });
 
-        // Reset form
-        setForm({
-          companyName: '',
-          contactName: '',
-          email: '',
-          phone: '',
-          projectName: '',
-          description: '',
-          materials: [],
-          customMaterial: '',
-          finishes: [],
-          customFinish: '',
-          quantity: '',
-          leadTime: '',
-          partNotes: '',
-          certifications: [],
-          files: [],
-        });
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
-        // Scroll to top to show success message
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        throw new Error(response.error || 'Failed to submit quote request');
+      // Try to get response text for debugging
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
       }
+
+      // Parse the response
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        data = { message: responseText };
+      }
+      console.log('Response data:', data);
+
+      setSubmitStatus({
+        type: 'success',
+        message: 'Quote request submitted successfully!',
+        quoteNumber: data.quoteNumber || data.quote_number,
+      });
+
+      // Reset form
+      setForm({
+        companyName: '',
+        contactName: '',
+        email: '',
+        phone: '',
+        projectName: '',
+        description: '',
+        materials: [],
+        customMaterial: '',
+        finishes: [],
+        customFinish: '',
+        quantity: '',
+        leadTime: '',
+        partNotes: '',
+        certifications: [],
+        files: [],
+      });
+
+      // Scroll to top to show success message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Submission error:', error);
       setSubmitStatus({

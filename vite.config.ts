@@ -10,4 +10,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://speakhost.app.n8n.cloud',
+        changeOrigin: true,
+        rewrite: (path) => '/webhook-test/project-submission',
+      },
+    },
+  },
 })
