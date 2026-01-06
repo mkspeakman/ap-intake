@@ -3,12 +3,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Upload, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
+import { FileUploadItem, type FileUploadItemData } from './FileUploadItem';
 
 interface ProjectInformationSectionProps {
   projectName: string;
   description: string;
   files: File[];
+  fileUploadData?: FileUploadItemData[];
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onFilesChange: (files: File[]) => void;
   onFileRemove: (index: number) => void;
@@ -18,6 +20,7 @@ export function ProjectInformationSection({
   projectName,
   description,
   files,
+  fileUploadData,
   onChange,
   onFilesChange,
   onFileRemove,
@@ -145,26 +148,31 @@ export function ProjectInformationSection({
 
         {files.length > 0 && (
           <div className="space-y-2">
-            {files.map((file, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between bg-gray-800 p-3 rounded"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">{file.name}</span>
-                  <span className="text-xs text-gray-400">
-                    ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onFileRemove(index)}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
+            {fileUploadData ? (
+              // Enhanced view with upload progress tracking
+              fileUploadData.map((uploadData, index) => (
+                <FileUploadItem
+                  key={index}
+                  data={uploadData}
+                  index={index}
+                  onRemove={onFileRemove}
+                />
+              ))
+            ) : (
+              // Fallback to simple file list (backward compatible)
+              files.map((file, index) => (
+                <FileUploadItem
+                  key={index}
+                  data={{
+                    file,
+                    status: 'pending',
+                    progress: 0,
+                  }}
+                  index={index}
+                  onRemove={onFileRemove}
+                />
+              ))
+            )}
           </div>
         )}
       </div>

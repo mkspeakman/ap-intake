@@ -35,8 +35,15 @@ export function CompanyContactSection({
   };
 
   return (
-    <div className="border-y rounded-lg py-4">
-      <div className="flex items-start justify-between">
+    <div className={`border-y rounded-lg py-4 transition-colors ${
+      !isExpanded ? 'hover:bg-accent/50' : ''
+    }`}>
+      <div 
+        className={`flex items-start justify-between ${
+          !isExpanded ? 'cursor-pointer' : ''
+        }`}
+        onClick={() => !isExpanded && setIsExpanded(true)}
+      >
         <div>
           <h2 className="text-xl font-semibold">Client Information</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -45,7 +52,7 @@ export function CompanyContactSection({
               : 'Leave blank if "None Specified"'}
           </p>
         </div>
-        <div>
+        <div onClick={(e) => e.stopPropagation()}>
           {isExpanded ? (
             <Button
               type="button"

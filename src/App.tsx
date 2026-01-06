@@ -6,6 +6,7 @@ import { CompanyContactSection } from '@/components/form-sections/CompanyContact
 import { ProjectInformationSection } from '@/components/form-sections/ProjectInformationSection';
 import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRequirementsSection';
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
+import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
 
 // Use proxy path for local development to avoid CORS issues
 // In production (Vercel), use Vercel serverless function
@@ -31,6 +32,8 @@ export default function ManufacturingIntakeForm() {
     certifications: [] as string[],
     files: [] as File[],
   });
+
+  const [fileUploadData, setFileUploadData] = useState<FileUploadItemData[]>([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -101,6 +104,15 @@ export default function ManufacturingIntakeForm() {
 
   const handleFilesChange = (files: File[]) => {
     setForm((prev) => ({ ...prev, files }));
+    
+    // Initialize upload data for each file
+    setFileUploadData(
+      files.map((file) => ({
+        file,
+        status: 'pending' as const,
+        progress: 0,
+      }))
+    );
   };
 
   const handleRemoveFile = (index: number) => {
@@ -108,6 +120,7 @@ export default function ManufacturingIntakeForm() {
       ...prev,
       files: prev.files.filter((_, i) => i !== index),
     }));
+    setFileUploadData((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -139,39 +152,68 @@ export default function ManufacturingIntakeForm() {
         formData.append('files', file);
       });
 
-      // Log what we're sending (FormData can't be directly logged)
+      // Log what we're sending
       console.log('Form data summary:');
       console.log('- Files:', form.files.length);
       console.log('- Company:', form.companyName);
       console.log('- Project:', form.projectName);
-
       console.log('Submitting to webhook:', WEBHOOK_URL);
 
-      // Submit to webhook
-      const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        body: formData,
+      // Set all files to uploading status
+      setFileUploadData((prev) =>
+        prev.map((item) => ({ ...item, status: 'uploading' as const, progress: 0 }))
+      );
+
+      // Use XMLHttpRequest for upload progress tracking
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100);
+          console.log(`Upload progress: ${percentComplete}%`);
+          
+          // Update all files with the same progress
+          setFileUploadData((prev) =>
+            prev.map((item) => ({
+              ...item,
+              status: 'uploading' as const,
+              progress: percentComplete,
+            }))
+          );
+        }
+      });
+
+      // Handle response
+      const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
+        xhr.addEventListener('load', () => resolve(xhr));
+        xhr.addEventListener('error', () => reject(new Error('Network error')));
+        xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+        
+        xhr.open('POST', WEBHOOK_URL);
+        xhr.send(formData);
       });
 
       console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('Response text:', response.responseText);
 
-      // Try to get response text for debugging
-      const responseText = await response.text();
-      console.log('Response text:', responseText);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP error! status: ${response.status}, message: ${response.responseText}`);
       }
 
       // Parse the response
       let data;
       try {
-        data = JSON.parse(responseText);
+        data = JSON.parse(response.responseText);
       } catch (e) {
-        data = { message: responseText };
+        data = { message: response.responseText };
       }
       console.log('Response data:', data);
+
+      // Mark all files as complete
+      setFileUploadData((prev) =>
+        prev.map((item) => ({ ...item, status: 'complete' as const, progress: 100 }))
+      );
 
       setSubmitStatus({
         type: 'success',
@@ -179,29 +221,42 @@ export default function ManufacturingIntakeForm() {
         quoteNumber: data.quoteNumber || data.quote_number,
       });
 
-      // Reset form
-      setForm({
-        companyName: '',
-        contactName: '',
-        email: '',
-        phone: '',
-        projectName: '',
-        description: '',
-        materials: [],
-        customMaterial: '',
-        finishes: [],
-        customFinish: '',
-        quantity: '',
-        leadTime: '',
-        partNotes: '',
-        certifications: [],
-        files: [],
-      });
+      // Reset form after a short delay to show completion
+      setTimeout(() => {
+        setForm({
+          companyName: '',
+          contactName: '',
+          email: '',
+          phone: '',
+          projectName: '',
+          description: '',
+          materials: [],
+          customMaterial: '',
+          finishes: [],
+          customFinish: '',
+          quantity: '',
+          leadTime: '',
+          partNotes: '',
+          certifications: [],
+          files: [],
+        });
+        setFileUploadData([]);
+      }, 1500);
 
       // Scroll to top to show success message
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Submission error:', error);
+      
+      // Mark all files as error
+      setFileUploadData((prev) =>
+        prev.map((item) => ({
+          ...item,
+          status: 'error' as const,
+          error: 'Upload failed',
+        }))
+      );
+      
       setSubmitStatus({
         type: 'error',
         message: error instanceof Error ? error.message : 'Failed to submit quote request. Please try again.',
@@ -212,9 +267,9 @@ export default function ManufacturingIntakeForm() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl">
-        <CardContent className="p-6 space-y-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-8">
+      <Card className="w-full max-w-4xl overflow-visible">
+        <CardContent className="p-6 space-y-6 overflow-visible">
           <div className="text-left">
             <h1 className="text-3xl font-bold">Manufacturing Quote Request</h1>
             <p className="text-sm text-muted-foreground mt-2">
@@ -247,12 +302,13 @@ export default function ManufacturingIntakeForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form id="quote-form" onSubmit={handleSubmit} className="space-y-6">
             {/* Project Information */}
             <ProjectInformationSection
               projectName={form.projectName}
               description={form.description}
               files={form.files}
+              fileUploadData={fileUploadData}
               onChange={handleChange}
               onFilesChange={handleFilesChange}
               onFileRemove={handleRemoveFile}
@@ -295,20 +351,26 @@ export default function ManufacturingIntakeForm() {
               onLeadTimeChange={(value) => setForm((prev) => ({ ...prev, leadTime: value }))}
             />
 
-            {/* Submit */}
-            <div className="text-center pt-4">
-              <Button 
-                type="submit" 
-                size="lg" 
-                className="px-8 bg-blue-600 hover:bg-blue-700"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Quote Request'}
-              </Button>
-            </div>
+            {/* Extra space to clear the fixed footer */}
+            <div className="h-24"></div>
           </form>
         </CardContent>
       </Card>
+
+      {/* Fixed Footer with Submit Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-[0_-2px_10px_rgba(0,0,0,0.05)] py-4 z-50">
+        <div className="text-center">
+          <Button 
+            type="submit"
+            form="quote-form"
+            size="lg" 
+            className="px-8 bg-blue-600 hover:bg-blue-700"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Quote Request'}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -54,7 +54,7 @@ export function ProjectRequirementsSection({
   onCertificationToggle,
 }: ProjectRequirementsSectionProps) {
   return (
-    <div className="space-y-4">
+    <div className="!mt-0">
       <h2 className="text-2xl font-bold hidden">Project Requirements</h2>
       
       <Accordion type="multiple" className="w-full">
