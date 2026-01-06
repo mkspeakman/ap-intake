@@ -4,12 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, AlertCircle } from 'lucide-react';
 import { CompanyContactSection } from '@/components/form-sections/CompanyContactSection';
 import { ProjectInformationSection } from '@/components/form-sections/ProjectInformationSection';
-import { MaterialRequirementsSection } from '@/components/form-sections/MaterialRequirementsSection';
-import { FinishRequirementsSection } from '@/components/form-sections/FinishRequirementsSection';
+import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRequirementsSection';
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
-import { PartRequirementsSection } from '@/components/form-sections/PartRequirementsSection';
-import { CertificationSection } from '@/components/form-sections/CertificationSection';
-import { FileUploadSection } from '@/components/form-sections/FileUploadSection';
 
 // Use proxy path for local development to avoid CORS issues
 // In production (Vercel), use Vercel serverless function
@@ -216,10 +212,10 @@ export default function ManufacturingIntakeForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl shadow-xl">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-4xl">
         <CardContent className="p-6 space-y-6">
-          <div className="text-center">
+          <div className="text-left">
             <h1 className="text-3xl font-bold">Manufacturing Quote Request</h1>
             <p className="text-sm text-muted-foreground mt-2">
               Submit your project details and technical requirements
@@ -231,8 +227,8 @@ export default function ManufacturingIntakeForm() {
             <div
               className={`p-4 rounded-lg flex items-center gap-3 ${
                 submitStatus.type === 'success'
-                  ? 'bg-green-900/30 border border-green-500'
-                  : 'bg-red-900/30 border border-red-500'
+                  ? 'bg-green-100 border border-green-500 text-green-900 dark:bg-green-900/30 dark:text-green-100'
+                  : 'bg-red-100 border border-red-500 text-red-900 dark:bg-red-900/30 dark:text-red-100'
               }`}
             >
               {submitStatus.type === 'success' ? (
@@ -243,7 +239,7 @@ export default function ManufacturingIntakeForm() {
               <div>
                 <p className="font-semibold">{submitStatus.message}</p>
                 {submitStatus.quoteNumber && (
-                  <p className="text-sm text-gray-300 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Quote Number: <span className="font-mono">{submitStatus.quoteNumber}</span>
                   </p>
                 )}
@@ -252,6 +248,16 @@ export default function ManufacturingIntakeForm() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Project Information */}
+            <ProjectInformationSection
+              projectName={form.projectName}
+              description={form.description}
+              files={form.files}
+              onChange={handleChange}
+              onFilesChange={handleFilesChange}
+              onFileRemove={handleRemoveFile}
+            />
+
             {/* Company & Contact Information */}
             <CompanyContactSection
               companyName={form.companyName}
@@ -261,31 +267,24 @@ export default function ManufacturingIntakeForm() {
               onChange={handleChange}
             />
 
-            {/* Project Information */}
-            <ProjectInformationSection
-              projectName={form.projectName}
-              description={form.description}
-              onChange={handleChange}
-            />
-
-            {/* Materials */}
-            <MaterialRequirementsSection
+            {/* Project Requirements (Accordion) */}
+            <ProjectRequirementsSection
               materials={form.materials}
               customMaterial={form.customMaterial}
               onMaterialAdd={handleAddMaterial}
               onMaterialRemove={handleRemoveMaterial}
               onCustomMaterialChange={handleChange}
               onCustomMaterialAdd={handleAddCustomMaterial}
-            />
-
-            {/* Finishes */}
-            <FinishRequirementsSection
               finishes={form.finishes}
               customFinish={form.customFinish}
               onFinishAdd={handleAddFinish}
               onFinishRemove={handleRemoveFinish}
               onCustomFinishChange={handleChange}
               onCustomFinishAdd={handleAddCustomFinish}
+              partNotes={form.partNotes}
+              onPartNotesChange={handleChange}
+              certifications={form.certifications}
+              onCertificationToggle={handleCertificationToggle}
             />
 
             {/* Quantities & Lead Time */}
@@ -294,25 +293,6 @@ export default function ManufacturingIntakeForm() {
               leadTime={form.leadTime}
               onQuantityChange={handleChange}
               onLeadTimeChange={(value) => setForm((prev) => ({ ...prev, leadTime: value }))}
-            />
-
-            {/* Part Notes */}
-            <PartRequirementsSection
-              partNotes={form.partNotes}
-              onChange={handleChange}
-            />
-
-            {/* Certifications */}
-            <CertificationSection
-              certifications={form.certifications}
-              onCertificationToggle={handleCertificationToggle}
-            />
-
-            {/* File Upload */}
-            <FileUploadSection
-              files={form.files}
-              onFilesChange={handleFilesChange}
-              onFileRemove={handleRemoveFile}
             />
 
             {/* Submit */}

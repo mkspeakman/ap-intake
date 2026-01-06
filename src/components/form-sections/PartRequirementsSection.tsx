@@ -12,7 +12,6 @@ export function PartRequirementsSection({
 }: PartRequirementsSectionProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Part-Level Requirements</h2>
       <div>
         <Label htmlFor="partNotes">Special Requirements, Tolerances, or Notes</Label>
         <Textarea

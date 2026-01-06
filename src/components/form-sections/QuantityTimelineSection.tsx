@@ -17,7 +17,7 @@ export function QuantityTimelineSection({
 }: QuantityTimelineSectionProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Quantity & Timeline</h2>
+      <h2 className="text-lg font-semibold border-b pb-2 hidden">Quantity & Timeline</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="quantity">Quantity *</Label>

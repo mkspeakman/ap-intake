@@ -37,7 +37,6 @@ export function MaterialRequirementsSection({
 }: MaterialRequirementsSectionProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Material Requirements</h2>
       <div>
         <Label>Select Material(s) *</Label>
         <Select onValueChange={onMaterialAdd}>

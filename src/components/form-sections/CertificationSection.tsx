@@ -21,7 +21,6 @@ export function CertificationSection({
 }: CertificationSectionProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Certification Requirements</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {CERTIFICATIONS.map((cert) => (
           <div key={cert.id} className="flex items-center space-x-2">

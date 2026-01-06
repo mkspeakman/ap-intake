@@ -35,7 +35,6 @@ export function FinishRequirementsSection({
 }: FinishRequirementsSectionProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Finish Requirements</h2>
       <div>
         <Label>Select Finish(es)</Label>
         <Select onValueChange={onFinishAdd}>

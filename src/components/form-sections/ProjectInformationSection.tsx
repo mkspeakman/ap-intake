@@ -1,42 +1,172 @@
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Upload, X } from 'lucide-react';
 
 interface ProjectInformationSectionProps {
   projectName: string;
   description: string;
+  files: File[];
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onFilesChange: (files: File[]) => void;
+  onFileRemove: (index: number) => void;
 }
 
 export function ProjectInformationSection({
   projectName,
   description,
+  files,
   onChange,
+  onFilesChange,
+  onFileRemove,
 }: ProjectInformationSectionProps) {
+  const [generateSummary, setGenerateSummary] = useState(true);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleFiles = (newFiles: File[]) => {
+    const validExtensions = ['.step', '.stp', '.iges', '.igs', '.stl', '.pdf', '.dxf', '.dwg', '.zip'];
+    const validFiles = newFiles.filter((file) => {
+      const ext = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+      return validExtensions.includes(ext);
+    });
+
+    if (validFiles.length < newFiles.length) {
+      alert('Some files were rejected. Please upload only CAD files (STEP, IGES, STL) or technical drawings (PDF, DXF).');
+    }
+
+    if (validFiles.length > 0) {
+      onFilesChange([...files, ...validFiles]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFiles = Array.from(e.target.files || []);
+    handleFiles(newFiles);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    handleFiles(droppedFiles);
+  };
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Project Information</h2>
-      <div>
-        <Label htmlFor="projectName">Project Name *</Label>
-        <Input
-          id="projectName"
-          name="projectName"
-          placeholder="Hydraulic Mount Bracket"
-          value={projectName}
-          onChange={onChange}
-          required
-        />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left Column - Project Details */}
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="projectName" className="text-base font-semibold">
+            Project Name <span className="text-red-500 text-sm">required</span>
+          </Label>
+          <Input
+            id="projectName"
+            name="projectName"
+            placeholder="Hydraulic mounting bracket"
+            value={projectName}
+            onChange={onChange}
+            required
+            className="mt-2"
+          />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="generateSummary"
+            checked={generateSummary}
+            onCheckedChange={(checked) => setGenerateSummary(checked as boolean)}
+          />
+          <Label
+            htmlFor="generateSummary"
+            className="text-sm font-normal cursor-pointer"
+          >
+            Generate summary with Ai
+          </Label>
+        </div>
+
+        <div>
+          <Textarea
+            id="description"
+            name="description"
+            placeholder="Provide a description, summary, and remarks"
+            rows={5}
+            value={description}
+            onChange={onChange}
+            className="resize-none"
+          />
+        </div>
       </div>
-      <div>
-        <Label htmlFor="description">Project Description</Label>
-        <Textarea
-          id="description"
-          name="description"
-          placeholder="General overview, application, critical requirements..."
-          rows={3}
-          value={description}
-          onChange={onChange}
-        />
+
+      {/* Right Column - File Upload */}
+      <div className="space-y-4">
+        <h3 className="text-base font-semibold">Drawings and Files</h3>
+        
+        <div
+          className={`border-2 border-dashed rounded-lg px-8 py-0 text-center transition-colors min-h-[204px] flex flex-col items-center justify-center ${
+            dragActive ? 'border-blue-500 bg-blue-50/10' : 'border-gray-600'
+          }`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
+          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <p className="text-sm mb-2">
+            Drag and drop files here, or{' '}
+            <label className="text-blue-500 hover:text-blue-600 cursor-pointer underline">
+              browse
+              <input
+                type="file"
+                multiple
+                accept=".step,.stp,.iges,.igs,.stl,.pdf,.dxf,.dwg,.zip"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+          </p>
+          <p className="text-xs text-gray-400">
+            Supported: STEP, ITES, STL, PDF, DXF, DWG, ZIP
+          </p>
+        </div>
+
+        {files.length > 0 && (
+          <div className="space-y-2">
+            {files.map((file, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between bg-gray-800 p-3 rounded"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">{file.name}</span>
+                  <span className="text-xs text-gray-400">
+                    ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onFileRemove(index)}
+                  className="text-red-500 hover:text-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
