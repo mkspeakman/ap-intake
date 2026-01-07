@@ -54,20 +54,27 @@
    - **Region:** Choose closest to your users (e.g., `us-east-1`)
    - Click "Create"
 
-5. **Authorize integration**
-   - Vercel will prompt to authorize Neon
-   - Click "Authorize" (creates Neon account if you don't have one)
-   - Wait for database creation (~30 seconds)
+5. **Connect to your project**
+   - Modal will appear: "Connect Project"
+   - **Search/select your project** from dropdown
+   - **Environments:** Keep all 3 checked (Development, Preview, Production)
+   - **Custom Prefix:** Change from "STORAGE" to blank (leave empty)
+     - This creates `POSTGRES_URL` instead of `STORAGE_URL`
+   - Click "Connect"
 
-6. **Verify environment variables**
-   - Vercel automatically sets these:
+6. **Wait for automatic redeploy**
+   - Vercel redeploys with new environment variables (~1-2 min)
+   - Don't manually redeploy, let it finish automatically
+
+7. **Verify environment variables**
+   - Go to Settings → Environment Variables
+   - Should see:
      ```
      POSTGRES_URL
-     POSTGRES_PRISMA_URL
+     POSTGRES_PRISMA_URL  
      POSTGRES_URL_NON_POOLING
-     DATABASE_URL
      ```
-   - Go to Settings → Environment Variables to verify
+   - If you see `STORAGE_URL` instead, you need to change the prefix
 
 ---
 

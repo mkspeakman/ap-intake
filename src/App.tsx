@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, AlertCircle } from 'lucide-react';
 import { CompanyContactSection } from '@/components/form-sections/CompanyContactSection';
 import { ProjectInformationSection } from '@/components/form-sections/ProjectInformationSection';
 import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRequirementsSection';
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
+import { SubmissionDialog } from '@/components/SubmissionDialog';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
+import type { FileUploadStatus } from '@/types/database.types';
 
 // Use proxy path for local development to avoid CORS issues
 // In production (Vercel), use Vercel serverless function
@@ -36,11 +37,24 @@ export default function ManufacturingIntakeForm() {
   const [fileUploadData, setFileUploadData] = useState<FileUploadItemData[]>([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{
-    type: 'success' | 'error' | null;
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogState, setDialogState] = useState<{
+    step: 'database' | 'uploading' | 'linking' | 'complete' | 'error';
     message: string;
-    quoteNumber?: string;
-  }>({ type: null, message: '' });
+    error?: string;
+  }>({
+    step: 'database',
+    message: 'Saving your submission...',
+  });
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogState, setDialogState] = useState<{
+    step: 'database' | 'uploading' | 'linking' | 'complete' | 'error';
+    message: string;
+    error?: string;
+  }>({
+    step: 'database',
+    message: 'Saving your submission...',
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -126,7 +140,11 @@ export default function ManufacturingIntakeForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitStatus({ type: null, message: '' });
+    setShowDialog(true);
+    setDialogState({
+      step: 'database',
+      message: 'Saving your submission...',
+    });
 
     // Generate quote number upfront
     const quoteNumber = `QR-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -178,6 +196,10 @@ export default function ManufacturingIntakeForm() {
 
       // STEP 2: Submit to n8n webhook (can fail, not critical since data is saved)
       console.log('Step 2: Submitting to n8n webhook...');
+      setDialogState({
+        step: 'uploading',
+        message: 'Uploading files...',
+      });
       
       // Create FormData for multipart/form-data submission
       const formData = new FormData();
@@ -251,6 +273,10 @@ export default function ManufacturingIntakeForm() {
 
           // STEP 3: Update database with Google Drive link (if we have dbQuoteId)
           if (dbQuoteId && webhookData?.webViewLink) {
+            setDialogState({
+              step: 'linking',
+              message: 'Linking to Google Drive...',
+            });
             try {
               await fetch(`/api/quote-requests/${dbQuoteId}/drive-link`, {
                 method: 'PATCH',
@@ -279,15 +305,14 @@ export default function ManufacturingIntakeForm() {
       );
 
       // Show success message (data is saved in database regardless of webhook)
-      setSubmitStatus({
-        type: 'success',
+      setDialogState({
+        step: 'complete',
         message: webhookSuccessful 
-          ? 'Quote request submitted successfully!' 
-          : 'Quote request saved! (Google Drive sync pending)',
-        quoteNumber: quoteNumber,
+          ? `Quote request submitted successfully! Quote Number: ${quoteNumber}` 
+          : `Quote request saved! (Google Drive sync pending) Quote Number: ${quoteNumber}`,
       });
 
-      // Reset form after a short delay to show completion
+      // Reset form and close dialog after a short delay
       setTimeout(() => {
         setForm({
           companyName: '',
@@ -307,10 +332,8 @@ export default function ManufacturingIntakeForm() {
           files: [],
         });
         setFileUploadData([]);
-      }, 1500);
-
-      // Scroll to top to show success message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+        setShowDialog(false);
+      }, 2000);
     } catch (error) {
       console.error('Submission error:', error);
       
@@ -323,13 +346,22 @@ export default function ManufacturingIntakeForm() {
         }))
       );
       
-      setSubmitStatus({
-        type: 'error',
-        message: error instanceof Error ? error.message : 'Failed to submit quote request. Please try again.',
+      setDialogState({
+        step: 'error',
+        message: 'Submission failed',
+        error: error instanceof Error ? error.message : 'Failed to submit quote request. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+    setDialogState({
+      step: 'database',
+      message: 'Saving your submission...',
+    });
   };
 
   return (
@@ -342,31 +374,6 @@ export default function ManufacturingIntakeForm() {
               Submit your project details and technical requirements
             </p>
           </div>
-
-          {/* Success/Error Message */}
-          {submitStatus.type && (
-            <div
-              className={`p-4 rounded-lg flex items-center gap-3 ${
-                submitStatus.type === 'success'
-                  ? 'bg-green-100 border border-green-500 text-green-900 dark:bg-green-900/30 dark:text-green-100'
-                  : 'bg-red-100 border border-red-500 text-red-900 dark:bg-red-900/30 dark:text-red-100'
-              }`}
-            >
-              {submitStatus.type === 'success' ? (
-                <CheckCircle className="h-5 w-5 text-green-500" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-500" />
-              )}
-              <div>
-                <p className="font-semibold">{submitStatus.message}</p>
-                {submitStatus.quoteNumber && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Quote Number: <span className="font-mono">{submitStatus.quoteNumber}</span>
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
 
           <form id="quote-form" onSubmit={handleSubmit} className="space-y-6">
             {/* Project Information */}
@@ -437,6 +444,19 @@ export default function ManufacturingIntakeForm() {
           </Button>
         </div>
       </div>
+
+      <SubmissionDialog
+        open={showDialog}
+        step={dialogState.step}
+        message={dialogState.message}
+        files={fileUploadData.map(f => ({
+          name: f.file.name,
+          status: f.status,
+          progress: f.progress
+        }))}
+        error={dialogState.error}
+        onClose={handleCloseDialog}
+      />
     </div>
   );
 }
