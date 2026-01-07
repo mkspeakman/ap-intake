@@ -76,64 +76,72 @@ export function CompanyContactSection({
         </div>
       </div>
 
-      {isExpanded && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t mt-4">
-          <div>
-            <Label htmlFor="companyName" className="text-sm font-medium">
-              Company Name
-            </Label>
-            <Input
-              id="companyName"
-              name="companyName"
-              placeholder="ABC Corp, Inc."
-              value={companyName}
-              onChange={onChange}
-              className="mt-1.5"
-            />
-          </div>
-          <div>
-            <Label htmlFor="contactName" className="text-sm font-medium">
-              Contact Name
-            </Label>
-            <Input
-              id="contactName"
-              name="contactName"
-              placeholder="First and Last Name"
-              value={contactName}
-              onChange={onChange}
-              className="mt-1.5"
-            />
-          </div>
-          <div>
-            <Label htmlFor="email" className="text-sm font-medium">
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              placeholder="address@domain.com"
-              type="email"
-              value={email}
-              onChange={onChange}
-              className="mt-1.5"
-            />
-          </div>
-          <div>
-            <Label htmlFor="phone" className="text-sm font-medium">
-              Phone Number
-            </Label>
-            <Input
-              id="phone"
-              name="phone"
-              placeholder="(___)___-____"
-              type="tel"
-              value={phone}
-              onChange={onChange}
-              className="mt-1.5"
-            />
-          </div>
+      <div 
+        className={`grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t mt-4 overflow-hidden transition-all ${
+          isExpanded ? 'animate-accordion-down' : 'animate-accordion-up'
+        }`}
+        style={{
+          height: isExpanded ? 'auto' : '0',
+          marginTop: isExpanded ? '1rem' : '0',
+          paddingTop: isExpanded ? '1rem' : '0',
+          borderTopWidth: isExpanded ? '1px' : '0',
+        }}
+      >
+        <div>
+          <Label htmlFor="companyName" className="text-sm font-medium">
+            Company Name
+          </Label>
+          <Input
+            id="companyName"
+            name="companyName"
+            placeholder="ABC Corp, Inc."
+            value={companyName}
+            onChange={onChange}
+            className="mt-1.5"
+          />
         </div>
-      )}
+        <div>
+          <Label htmlFor="contactName" className="text-sm font-medium">
+            Contact Name
+          </Label>
+          <Input
+            id="contactName"
+            name="contactName"
+            placeholder="First and Last Name"
+            value={contactName}
+            onChange={onChange}
+            className="mt-1.5"
+          />
+        </div>
+        <div>
+          <Label htmlFor="email" className="text-sm font-medium">
+            Email Address
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            placeholder="address@domain.com"
+            type="email"
+            value={email}
+            onChange={onChange}
+            className="mt-1.5"
+          />
+        </div>
+        <div>
+          <Label htmlFor="phone" className="text-sm font-medium">
+            Phone Number
+          </Label>
+          <Input
+            id="phone"
+            name="phone"
+            placeholder="(___)___-____"
+            type="tel"
+            value={phone}
+            onChange={onChange}
+            className="mt-1.5"
+          />
+        </div>
+      </div>
     </div>
   );
 }

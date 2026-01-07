@@ -20,7 +20,7 @@ export function QuantityTimelineSection({
       <h2 className="text-lg font-semibold border-b pb-2 hidden">Quantity & Timeline</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="quantity">Quantity *</Label>
+          <Label htmlFor="quantity">Quantity <small className="text-red-500">required</small></Label>
           <Input
             id="quantity"
             name="quantity"

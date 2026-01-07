@@ -267,9 +267,9 @@ export default function ManufacturingIntakeForm() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-8">
+    <div className="min-h-screen bg-background flex items-center justify-center sm:p-2 md:p-8">
       <Card className="w-full max-w-4xl overflow-visible">
-        <CardContent className="p-6 space-y-6 overflow-visible">
+        <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
           <div className="text-left">
             <h1 className="text-3xl font-bold">Manufacturing Quote Request</h1>
             <p className="text-sm text-muted-foreground mt-2">

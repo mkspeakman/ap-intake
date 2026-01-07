@@ -62,7 +62,7 @@ export function FileUploadSection({
         <Label>Upload CAD Files & Technical Drawings</Label>
         <div
           className={`mt-2 border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            dragActive ? 'border-blue-500 bg-blue-50/10' : 'border-gray-600'
+            dragActive ? 'border-blue-500 bg-blue-50/10' : 'border-slate-300'
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}

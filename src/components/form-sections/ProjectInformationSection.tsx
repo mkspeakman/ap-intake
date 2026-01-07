@@ -69,7 +69,7 @@ export function ProjectInformationSection({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-6">
       {/* Left Column - Project Details */}
       <div className="space-y-4">
         <div>
@@ -91,7 +91,18 @@ export function ProjectInformationSection({
           <Checkbox
             id="generateSummary"
             checked={generateSummary}
-            onCheckedChange={(checked) => setGenerateSummary(checked as boolean)}
+            onCheckedChange={(checked) => {
+              const newChecked = checked as boolean;
+              setGenerateSummary(newChecked);
+              
+              // Clear description when toggling AI summary on
+              if (newChecked && description) {
+                const event = {
+                  target: { name: 'description', value: '' }
+                } as React.ChangeEvent<HTMLTextAreaElement>;
+                onChange(event);
+              }
+            }}
           />
           <Label
             htmlFor="generateSummary"
@@ -105,11 +116,12 @@ export function ProjectInformationSection({
           <Textarea
             id="description"
             name="description"
-            placeholder="Provide a description, summary, and remarks"
+            placeholder={generateSummary ? "AI will generate summary from files" : "Provide a description, summary, and remarks"}
             rows={5}
             value={description}
             onChange={onChange}
-            className="resize-none"
+            disabled={generateSummary}
+            className="resize-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
       </div>
@@ -120,7 +132,7 @@ export function ProjectInformationSection({
         
         <div
           className={`border-2 border-dashed rounded-lg px-8 py-0 text-center transition-colors min-h-[204px] flex flex-col items-center justify-center ${
-            dragActive ? 'border-blue-500 bg-blue-50/10' : 'border-gray-600'
+            dragActive ? 'border-blue-500 bg-blue-50/10' : 'border-slate-300 bg-blue-50/30'
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
