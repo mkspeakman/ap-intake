@@ -46,15 +46,6 @@ export default function ManufacturingIntakeForm() {
     step: 'database',
     message: 'Saving your submission...',
   });
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogState, setDialogState] = useState<{
-    step: 'database' | 'uploading' | 'linking' | 'complete' | 'error';
-    message: string;
-    error?: string;
-  }>({
-    step: 'database',
-    message: 'Saving your submission...',
-  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
