@@ -268,7 +268,7 @@ export default function ManufacturingIntakeForm() {
               message: 'Linking to Google Drive...',
             });
             try {
-              await fetch(`/api/quote-requests/${dbQuoteId}/drive-link`, {
+              await fetch(`/api/drive-link?id=${dbQuoteId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
