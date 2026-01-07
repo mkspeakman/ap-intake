@@ -27,6 +27,11 @@ export function SubmissionDialog({
 }: SubmissionDialogProps) {
   const isComplete = step === 'complete' || step === 'error';
 
+  // Debug logging
+  if (step === 'uploading' && files.length > 0) {
+    console.log('SubmissionDialog - files:', files);
+  }
+
   return (
     <Dialog open={open} onOpenChange={isComplete ? onClose : undefined}>
       <DialogContent 

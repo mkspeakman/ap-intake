@@ -227,16 +227,18 @@ export default function ManufacturingIntakeForm() {
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
           const percentComplete = Math.round((e.loaded / e.total) * 100);
-          console.log(`Upload progress: ${percentComplete}%`);
+          console.log(`Upload progress: ${percentComplete}% (${e.loaded} / ${e.total} bytes)`);
           
           // Update all files with the same progress
-          setFileUploadData((prev) =>
-            prev.map((item) => ({
+          setFileUploadData((prev) => {
+            const updated = prev.map((item) => ({
               ...item,
               status: 'uploading' as const,
               progress: percentComplete,
-            }))
-          );
+            }));
+            console.log('Updated fileUploadData:', updated);
+            return updated;
+          });
         }
       });
 
