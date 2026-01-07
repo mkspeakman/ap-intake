@@ -7,7 +7,6 @@ import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRe
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
 import { SubmissionDialog } from '@/components/SubmissionDialog';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
-import type { FileUploadStatus } from '@/types/database.types';
 
 // Use proxy path for local development to avoid CORS issues
 // In production (Vercel), use Vercel serverless function

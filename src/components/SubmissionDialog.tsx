@@ -1,8 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
-import { FileUploadItem } from './form-sections/FileUploadItem';
-import { CheckCircle, AlertCircle, Loader2, Database, Cloud } from 'lucide-react';
-import type { FileUploadStatus } from '../types/database.types';
+import { CheckCircle, AlertCircle, Loader2, Database, Cloud, FileText } from 'lucide-react';
+import { Progress } from './ui/progress';
+import type { FileUploadStatus } from './form-sections/FileUploadItem';
 
 interface SubmissionDialogProps {
   open: boolean;
@@ -106,12 +106,25 @@ export function SubmissionDialog({
             {step === 'uploading' && files.length > 0 && (
               <div className="pl-8 space-y-2 mt-2">
                 {files.map((file, index) => (
-                  <FileUploadItem
-                    key={index}
-                    file={{ name: file.name } as File}
-                    status={file.status}
-                    progress={file.progress}
-                  />
+                  <div key={index} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                    <div className="flex-shrink-0">
+                      {file.status === 'uploading' && <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />}
+                      {file.status === 'complete' && <CheckCircle className="h-4 w-4 text-green-500" />}
+                      {file.status === 'error' && <AlertCircle className="h-4 w-4 text-red-500" />}
+                      {file.status === 'pending' && <FileText className="h-4 w-4 text-muted-foreground" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{file.name}</p>
+                      {file.status === 'uploading' && (
+                        <Progress value={file.progress || 0} className="h-1 mt-1" />
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 text-xs text-muted-foreground">
+                      {file.status === 'uploading' && `${file.progress || 0}%`}
+                      {file.status === 'complete' && 'Complete'}
+                      {file.status === 'error' && 'Failed'}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
