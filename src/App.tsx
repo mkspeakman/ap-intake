@@ -217,30 +217,11 @@ export default function ManufacturingIntakeForm() {
 
       // Set all files to uploading status
       setFileUploadData((prev) =>
-        prev.map((item) => ({ ...item, status: 'uploading' as const, progress: 0 }))
+        prev.map((item) => ({ ...item, status: 'uploading' as const }))
       );
 
-      // Use XMLHttpRequest for upload progress tracking
+      // Use XMLHttpRequest for upload
       const xhr = new XMLHttpRequest();
-      
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (e) => {
-        if (e.lengthComputable) {
-          const percentComplete = Math.round((e.loaded / e.total) * 100);
-          console.log(`Upload progress: ${percentComplete}% (${e.loaded} / ${e.total} bytes)`);
-          
-          // Update all files with the same progress
-          setFileUploadData((prev) => {
-            const updated = prev.map((item) => ({
-              ...item,
-              status: 'uploading' as const,
-              progress: percentComplete,
-            }));
-            console.log('Updated fileUploadData:', updated);
-            return updated;
-          });
-        }
-      });
 
       // Handle response
       const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
@@ -441,7 +422,8 @@ export default function ManufacturingIntakeForm() {
         files={fileUploadData.map(f => ({
           name: f.file.name,
           status: f.status,
-          progress: f.progress
+          progress: f.progress,
+          size: f.file.size,
         }))}
         error={dialogState.error}
         onClose={handleCloseDialog}

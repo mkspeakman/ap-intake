@@ -12,6 +12,7 @@ interface SubmissionDialogProps {
     name: string;
     status: FileUploadStatus;
     progress?: number;
+    size?: number;
   }>;
   error?: string;
   onClose: () => void;
@@ -27,10 +28,22 @@ export function SubmissionDialog({
 }: SubmissionDialogProps) {
   const isComplete = step === 'complete' || step === 'error';
 
-  // Debug logging
-  if (step === 'uploading' && files.length > 0) {
-    console.log('SubmissionDialog - files:', files);
-  }
+  // Estimate upload time based on file sizes
+  const estimateUploadTime = () => {
+    if (!files.length) return '';
+    
+    const totalBytes = files.reduce((sum, f) => sum + (f.size || 0), 0);
+    const totalMB = totalBytes / (1024 * 1024);
+    
+    // Rough estimates: ~2-3 seconds per MB for n8n processing + Google Drive upload
+    // Plus base overhead of ~3 seconds for n8n workflow
+    const estimatedSeconds = Math.max(5, Math.round(3 + (totalMB * 2.5)));
+    
+    if (estimatedSeconds < 10) return 'a few seconds';
+    if (estimatedSeconds < 30) return `~${estimatedSeconds} seconds`;
+    if (estimatedSeconds < 90) return `~${Math.round(estimatedSeconds / 10) * 10} seconds`;
+    return `~${Math.ceil(estimatedSeconds / 60)} minute${estimatedSeconds >= 120 ? 's' : ''}`;
+  };
 
   return (
     <Dialog open={open} onOpenChange={isComplete ? onClose : undefined}>
@@ -100,7 +113,14 @@ export function SubmissionDialog({
                     <p className="text-sm font-medium">Uploading to Google Drive</p>
                   </div>
                   {step === 'uploading' && (
-                    <p className="text-xs text-muted-foreground mt-1">{message}</p>
+                    <>
+                      <p className="text-xs text-muted-foreground mt-1">{message}</p>
+                      {files.length > 0 && (
+                        <p className="text-xs text-muted-foreground/70 mt-1 italic">
+                          Estimated time: {estimateUploadTime()}
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -119,12 +139,9 @@ export function SubmissionDialog({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
-                      {file.status === 'uploading' && file.progress !== undefined && (
-                        <Progress value={file.progress} className="h-1 mt-1" />
-                      )}
                     </div>
-                    <div className="flex-shrink-0 text-xs text-muted-foreground font-mono">
-                      {file.status === 'uploading' && file.progress !== undefined && `${file.progress}%`}
+                    <div className="flex-shrink-0 text-xs text-muted-foreground">
+                      {file.status === 'uploading' && 'Uploading...'}
                       {file.status === 'complete' && 'Complete'}
                       {file.status === 'error' && 'Failed'}
                     </div>
