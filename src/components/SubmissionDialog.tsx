@@ -50,7 +50,6 @@ export function SubmissionDialog({
             )}
             {!isComplete && (
               <>
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 Submitting Project...
               </>
             )}
@@ -115,12 +114,12 @@ export function SubmissionDialog({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
-                      {file.status === 'uploading' && (
-                        <Progress value={file.progress || 0} className="h-1 mt-1" />
+                      {file.status === 'uploading' && file.progress !== undefined && (
+                        <Progress value={file.progress} className="h-1 mt-1" />
                       )}
                     </div>
-                    <div className="flex-shrink-0 text-xs text-muted-foreground">
-                      {file.status === 'uploading' && `${file.progress || 0}%`}
+                    <div className="flex-shrink-0 text-xs text-muted-foreground font-mono">
+                      {file.status === 'uploading' && file.progress !== undefined && `${file.progress}%`}
                       {file.status === 'complete' && 'Complete'}
                       {file.status === 'error' && 'Failed'}
                     </div>

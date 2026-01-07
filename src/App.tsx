@@ -302,28 +302,25 @@ export default function ManufacturingIntakeForm() {
           : `Quote request saved! (Google Drive sync pending) Quote Number: ${quoteNumber}`,
       });
 
-      // Reset form and close dialog after a short delay
-      setTimeout(() => {
-        setForm({
-          companyName: '',
-          contactName: '',
-          email: '',
-          phone: '',
-          projectName: '',
-          description: '',
-          materials: [],
-          customMaterial: '',
-          finishes: [],
-          customFinish: '',
-          quantity: '',
-          leadTime: '',
-          partNotes: '',
-          certifications: [],
-          files: [],
-        });
-        setFileUploadData([]);
-        setShowDialog(false);
-      }, 2000);
+      // Reset form immediately (behind the modal)
+      setForm({
+        companyName: '',
+        contactName: '',
+        email: '',
+        phone: '',
+        projectName: '',
+        description: '',
+        materials: [],
+        customMaterial: '',
+        finishes: [],
+        customFinish: '',
+        quantity: '',
+        leadTime: '',
+        partNotes: '',
+        certifications: [],
+        files: [],
+      });
+      setFileUploadData([]);
     } catch (error) {
       console.error('Submission error:', error);
       
