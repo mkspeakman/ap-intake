@@ -286,6 +286,31 @@ app.patch('/api/quote-requests/:id/status', (req, res) => {
   }
 });
 
+// PATCH /api/quote-requests/:id/drive-link - Update with Google Drive link
+app.patch('/api/quote-requests/:id/drive-link', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { drive_file_id, drive_link } = req.body;
+
+    db.prepare(`
+      UPDATE quote_requests 
+      SET drive_file_id = ?, drive_link = ?, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `).run(drive_file_id, drive_link, id);
+
+    res.json({
+      success: true,
+      message: 'Google Drive link updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating Drive link:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update Drive link',
+    });
+  }
+});
+
 // GET /api/quote-requests/analytics - Get analytics data
 app.get('/api/analytics/quote-requests', (req, res) => {
   try {

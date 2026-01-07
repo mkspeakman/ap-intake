@@ -1,9 +1,9 @@
 -- Manufacturing Quote Requests Database Schema
--- Optimized for AI querying and flexible analysis
+-- PostgreSQL version for Vercel Postgres
 
 -- Main quote requests table
-CREATE TABLE quote_requests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS quote_requests (
+    id SERIAL PRIMARY KEY,
     quote_number VARCHAR(50) UNIQUE NOT NULL,
     status VARCHAR(20) DEFAULT 'pending',
     
@@ -27,18 +27,17 @@ CREATE TABLE quote_requests (
     -- Metadata
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    submitted_by VARCHAR(255),
-    
-    -- Indexes for common queries
-    INDEX idx_company (company_name),
-    INDEX idx_status (status),
-    INDEX idx_created (created_at),
-    INDEX idx_quote_number (quote_number)
+    submitted_by VARCHAR(255)
 );
 
--- Materials table (many-to-many with quote_requests)
-CREATE TABLE materials (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE INDEX IF NOT EXISTS idx_company ON quote_requests(company_name);
+CREATE INDEX IF NOT EXISTS idx_status ON quote_requests(status);
+CREATE INDEX IF NOT EXISTS idx_created ON quote_requests(created_at);
+CREATE INDEX IF NOT EXISTS idx_quote_number ON quote_requests(quote_number);
+
+-- Materials table
+CREATE TABLE IF NOT EXISTS materials (
+    id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     category VARCHAR(100),
     is_custom BOOLEAN DEFAULT FALSE,
@@ -46,8 +45,8 @@ CREATE TABLE materials (
 );
 
 -- Quote-Material junction table
-CREATE TABLE quote_materials (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS quote_materials (
+    id SERIAL PRIMARY KEY,
     quote_request_id INTEGER NOT NULL,
     material_id INTEGER NOT NULL,
     notes TEXT,
@@ -56,9 +55,9 @@ CREATE TABLE quote_materials (
     UNIQUE(quote_request_id, material_id)
 );
 
--- Finishes table (many-to-many with quote_requests)
-CREATE TABLE finishes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+-- Finishes table
+CREATE TABLE IF NOT EXISTS finishes (
+    id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     category VARCHAR(100),
     is_custom BOOLEAN DEFAULT FALSE,
@@ -66,8 +65,8 @@ CREATE TABLE finishes (
 );
 
 -- Quote-Finish junction table
-CREATE TABLE quote_finishes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS quote_finishes (
+    id SERIAL PRIMARY KEY,
     quote_request_id INTEGER NOT NULL,
     finish_id INTEGER NOT NULL,
     notes TEXT,
@@ -77,16 +76,16 @@ CREATE TABLE quote_finishes (
 );
 
 -- Certifications table
-CREATE TABLE certifications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS certifications (
+    id SERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT
 );
 
 -- Quote-Certification junction table
-CREATE TABLE quote_certifications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS quote_certifications (
+    id SERIAL PRIMARY KEY,
     quote_request_id INTEGER NOT NULL,
     certification_id INTEGER NOT NULL,
     FOREIGN KEY (quote_request_id) REFERENCES quote_requests(id) ON DELETE CASCADE,
@@ -94,9 +93,9 @@ CREATE TABLE quote_certifications (
     UNIQUE(quote_request_id, certification_id)
 );
 
--- Files table (stores metadata, actual files stored separately)
-CREATE TABLE quote_files (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+-- Files table
+CREATE TABLE IF NOT EXISTS quote_files (
+    id SERIAL PRIMARY KEY,
     quote_request_id INTEGER NOT NULL,
     filename VARCHAR(255) NOT NULL,
     file_extension VARCHAR(10) NOT NULL,
@@ -104,41 +103,39 @@ CREATE TABLE quote_files (
     file_size_bytes INTEGER,
     upload_order INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (quote_request_id) REFERENCES quote_requests(id) ON DELETE CASCADE,
-    INDEX idx_quote_files (quote_request_id)
+    FOREIGN KEY (quote_request_id) REFERENCES quote_requests(id) ON DELETE CASCADE
 );
-
--- Pre-populate certifications
-INSERT INTO certifications (code, name, description) VALUES
-    ('itar', 'ITAR Compliant', 'International Traffic in Arms Regulations'),
-    ('iso', 'ISO 9001', 'Quality Management System'),
-    ('as9100', 'AS9100', 'Aerospace Quality Management'),
-    ('coc', 'Certificate of Conformance', 'Material and process conformance certificate'),
-    ('material-cert', 'Material Certification', 'Material traceability and certification'),
-    ('fai', 'First Article Inspection', 'FAI report per AS9102');
 
 -- Pre-populate common materials
 INSERT INTO materials (name, category) VALUES
-    ('6061-T6 Aluminum', 'Aluminum'),
-    ('7075 Aluminum', 'Aluminum'),
-    ('304 Stainless Steel', 'Stainless Steel'),
-    ('316 Stainless Steel', 'Stainless Steel'),
-    ('Titanium', 'Titanium'),
-    ('PEEK', 'Polymer'),
-    ('Delrin', 'Polymer'),
-    ('ABS', 'Polymer'),
-    ('Polycarbonate', 'Polymer'),
-    ('Brass', 'Brass'),
-    ('Copper', 'Copper');
+('Aluminum 6061-T6', 'Aluminum'),
+('Aluminum 7075-T6', 'Aluminum'),
+('Stainless Steel 304', 'Steel'),
+('Stainless Steel 316', 'Steel'),
+('Titanium Grade 5', 'Titanium'),
+('Carbon Steel', 'Steel'),
+('Brass', 'Copper Alloy'),
+('Bronze', 'Copper Alloy')
+ON CONFLICT (name) DO NOTHING;
 
 -- Pre-populate common finishes
 INSERT INTO finishes (name, category) VALUES
-    ('As-Machined', 'None'),
-    ('Anodize (Type II)', 'Anodize'),
-    ('Anodize (Type III - Hard)', 'Anodize'),
-    ('Bead Blast', 'Surface Treatment'),
-    ('Powder Coat', 'Coating'),
-    ('Chrome Plating', 'Plating'),
-    ('Black Oxide', 'Coating'),
-    ('Passivation', 'Surface Treatment'),
-    ('Electropolish', 'Surface Treatment');
+('Anodized', 'Surface Treatment'),
+('Powder Coated', 'Coating'),
+('Electropolish', 'Surface Treatment'),
+('Bead Blasted', 'Surface Treatment'),
+('Passivated', 'Chemical Treatment'),
+('Black Oxide', 'Chemical Treatment'),
+('Zinc Plated', 'Plating'),
+('Chrome Plated', 'Plating')
+ON CONFLICT (name) DO NOTHING;
+
+-- Pre-populate certifications
+INSERT INTO certifications (code, name, description) VALUES
+('AS9100', 'AS9100', 'Aerospace Quality Management System'),
+('ISO 9001', 'ISO 9001', 'Quality Management System'),
+('ITAR', 'ITAR', 'International Traffic in Arms Regulations'),
+('NADCAP', 'NADCAP', 'National Aerospace and Defense Contractors Accreditation Program'),
+('Material Certs', 'Material Certifications', 'Material test reports and certifications'),
+('First Article Inspection', 'First Article Inspection', 'AS9102 First Article Inspection Report')
+ON CONFLICT (code) DO NOTHING;

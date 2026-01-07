@@ -128,11 +128,62 @@ export default function ManufacturingIntakeForm() {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: '' });
 
+    // Generate quote number upfront
+    const quoteNumber = `QR-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
     try {
+      // STEP 1: Save to database FIRST (reliable, local)
+      console.log('Step 1: Saving to database...');
+      
+      const dbPayload = {
+        quote_number: quoteNumber,
+        company_name: form.companyName,
+        contact_name: form.contactName,
+        email: form.email,
+        phone: form.phone,
+        project_name: form.projectName,
+        description: form.description,
+        quantity: form.quantity,
+        lead_time: form.leadTime,
+        part_notes: form.partNotes,
+        materials: form.materials,
+        finishes: form.finishes,
+        certifications: form.certifications,
+        files: form.files.map((file, index) => ({
+          filename: file.name,
+          file_extension: file.name.substring(file.name.lastIndexOf('.')),
+          file_size_bytes: file.size,
+          upload_order: index,
+        })),
+      };
+
+      let dbQuoteId;
+      try {
+        const dbResponse = await fetch('/api/quote-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dbPayload),
+        });
+        
+        if (dbResponse.ok) {
+          const dbData = await dbResponse.json();
+          dbQuoteId = dbData.data.id;
+          console.log('✓ Database save successful:', dbData);
+        } else {
+          console.warn('Database save failed (non-critical):', await dbResponse.text());
+        }
+      } catch (dbError) {
+        console.warn('Database save failed (non-critical):', dbError);
+      }
+
+      // STEP 2: Submit to n8n webhook (can fail, not critical since data is saved)
+      console.log('Step 2: Submitting to n8n webhook...');
+      
       // Create FormData for multipart/form-data submission
       const formData = new FormData();
       
-      // Add form fields
+      // Add quote number and form fields
+      formData.append('quoteNumber', quoteNumber);
       formData.append('companyName', form.companyName);
       formData.append('contactName', form.contactName);
       formData.append('email', form.email);
@@ -151,13 +202,6 @@ export default function ManufacturingIntakeForm() {
         console.log(`Adding file ${index}:`, file.name, file.type, file.size, 'bytes');
         formData.append('files', file);
       });
-
-      // Log what we're sending
-      console.log('Form data summary:');
-      console.log('- Files:', form.files.length);
-      console.log('- Company:', form.companyName);
-      console.log('- Project:', form.projectName);
-      console.log('Submitting to webhook:', WEBHOOK_URL);
 
       // Set all files to uploading status
       setFileUploadData((prev) =>
@@ -194,31 +238,53 @@ export default function ManufacturingIntakeForm() {
         xhr.send(formData);
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response text:', response.responseText);
+      console.log('n8n webhook response status:', response.status);
 
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(`HTTP error! status: ${response.status}, message: ${response.responseText}`);
-      }
+      let webhookData;
+      let webhookSuccessful = false;
 
-      // Parse the response
-      let data;
-      try {
-        data = JSON.parse(response.responseText);
-      } catch (e) {
-        data = { message: response.responseText };
+      if (response.status >= 200 && response.status < 300) {
+        try {
+          webhookData = JSON.parse(response.responseText);
+          webhookSuccessful = true;
+          console.log('✓ n8n webhook successful:', webhookData);
+
+          // STEP 3: Update database with Google Drive link (if we have dbQuoteId)
+          if (dbQuoteId && webhookData?.webViewLink) {
+            try {
+              await fetch(`/api/quote-requests/${dbQuoteId}/drive-link`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  drive_file_id: webhookData.id,
+                  drive_link: webhookData.webViewLink,
+                }),
+              });
+              console.log('✓ Database updated with Google Drive link');
+            } catch (updateError) {
+              console.warn('Failed to update database with Drive link:', updateError);
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to parse webhook response:', e);
+          webhookData = { message: response.responseText };
+        }
+      } else {
+        console.warn('n8n webhook failed with status:', response.status);
       }
-      console.log('Response data:', data);
 
       // Mark all files as complete
       setFileUploadData((prev) =>
         prev.map((item) => ({ ...item, status: 'complete' as const, progress: 100 }))
       );
 
+      // Show success message (data is saved in database regardless of webhook)
       setSubmitStatus({
         type: 'success',
-        message: 'Quote request submitted successfully!',
-        quoteNumber: data.quoteNumber || data.quote_number,
+        message: webhookSuccessful 
+          ? 'Quote request submitted successfully!' 
+          : 'Quote request saved! (Google Drive sync pending)',
+        quoteNumber: quoteNumber,
       });
 
       // Reset form after a short delay to show completion

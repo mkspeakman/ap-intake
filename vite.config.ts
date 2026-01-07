@@ -12,10 +12,14 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
+      '/api/webhook': {
         target: 'https://speakhost.app.n8n.cloud',
         changeOrigin: true,
         rewrite: () => '/webhook/project-submission',
+      },
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
       },
     },
   },

@@ -2,11 +2,15 @@
 
 ## Overview
 
-The manufacturing quote intake system now includes a complete SQL database structure optimized for:
+**This guide covers LOCAL DEVELOPMENT with SQLite + Express.**  
+**For Vercel production deployment, see [VERCEL_DATABASE.md](VERCEL_DATABASE.md)**
+
+The manufacturing quote intake system includes a complete SQL database structure optimized for:
 - Storing all form submissions
 - AI-friendly querying and analysis
 - Flexible material/finish/certification management
 - File metadata tracking (filenames and extensions only)
+- Future CRUD operations with AI agents
 
 ## Database Structure
 
@@ -30,6 +34,20 @@ The database uses a **normalized relational structure** with the following table
 ✅ **Normalized**: Avoid data duplication, maintain referential integrity
 ✅ **Scalable**: Efficient for thousands of quotes with proper indexing
 ✅ **Queryable**: Supports complex analytics and reporting
+
+### Dual Environment Support
+
+**Local Development (this guide):**
+- **Database:** SQLite (`database/quotes.db`)
+- **Schema:** `database/schema.sql`
+- **Backend:** Express.js server (`server/index.ts`)
+- **Port:** http://localhost:3001
+
+**Production on Vercel:**
+- **Database:** PostgreSQL (Neon)
+- **Schema:** `database/schema-postgres.sql`
+- **Backend:** Serverless functions (`/api/*`)
+- **See:** [VERCEL_DATABASE.md](VERCEL_DATABASE.md)
 
 ## Setup Instructions
 
