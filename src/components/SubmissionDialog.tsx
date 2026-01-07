@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { CheckCircle, AlertCircle, Loader2, Database, Cloud, FileText } from 'lucide-react';
-import { Progress } from './ui/progress';
 import type { FileUploadStatus } from './form-sections/FileUploadItem';
 
 interface SubmissionDialogProps {
