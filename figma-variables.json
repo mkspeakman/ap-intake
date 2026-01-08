@@ -1,0 +1,447 @@
+[
+  {
+    "AP Intake | Design Tokens": {
+      "modes": {
+        "Light Mode": {
+          "brand": {
+            "charcoal": {
+              "$scopes": ["ALL_FILLS", "STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$description": "Deep charcoal - Dark text, dark mode backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--color-charcoal)"
+              }
+            },
+            "gray": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#626163",
+              "$description": "Medium gray - Muted text, secondary content",
+              "$codeSyntax": {
+                "WEB": "var(--color-gray)"
+              }
+            },
+            "blue": {
+              "$scopes": ["ALL_FILLS", "STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#3D6A9E",
+              "$description": "Primary blue - Actions, links (WCAG AA: 4.92:1)",
+              "$codeSyntax": {
+                "WEB": "var(--color-blue)"
+              }
+            },
+            "gold": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FCB716",
+              "$description": "Gold - Highlights, secondary actions (WCAG AA: 11.24:1)",
+              "$codeSyntax": {
+                "WEB": "var(--color-gold)"
+              }
+            },
+            "silver": {
+              "$scopes": ["ALL_FILLS", "STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#D4D6D8",
+              "$description": "Silver - Subtle borders, sleeker UI (1.5:1 on cream)",
+              "$codeSyntax": {
+                "WEB": "var(--color-silver)"
+              }
+            },
+            "cream": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F1F0EF",
+              "$description": "Cream - Main background, light surfaces",
+              "$codeSyntax": {
+                "WEB": "var(--color-cream)"
+              }
+            }
+          },
+          "neutral": {
+            "white": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF",
+              "$description": "Pure white - Cards, elevated surfaces"
+            },
+            "accent-light": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F3F4F5",
+              "$description": "Very subtle hover states - 96% lightness for sleek aesthetic"
+            }
+          },
+          "semantic": {
+            "background": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F1F0EF",
+              "$description": "Main page background",
+              "$codeSyntax": {
+                "WEB": "var(--background)"
+              }
+            },
+            "foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$description": "Primary text color",
+              "$codeSyntax": {
+                "WEB": "var(--foreground)"
+              }
+            },
+            "primary": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#3D6A9E",
+              "$description": "Primary action color - buttons, links",
+              "$codeSyntax": {
+                "WEB": "var(--primary)"
+              }
+            },
+            "primary-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF",
+              "$description": "Text on primary backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--primary-foreground)"
+              }
+            },
+            "secondary": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FCB716",
+              "$description": "Secondary/highlight color",
+              "$codeSyntax": {
+                "WEB": "var(--secondary)"
+              }
+            },
+            "secondary-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$description": "Text on secondary backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--secondary-foreground)"
+              }
+            },
+            "accent": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F3F4F5",
+              "$description": "Subtle hover states for tables, dropdowns, accordions",
+              "$codeSyntax": {
+                "WEB": "var(--accent)"
+              }
+            },
+            "accent-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$description": "Text on accent backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--accent-foreground)"
+              }
+            },
+            "muted": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#BBC0C5",
+              "$description": "Subtle backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--muted)"
+              }
+            },
+            "muted-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#626163",
+              "$description": "Secondary text",
+              "$codeSyntax": {
+                "WEB": "var(--muted-foreground)"
+              }
+            },
+            "card": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF",
+              "$description": "Card backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--card)"
+              }
+            },
+            "card-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$description": "Text on cards",
+              "$codeSyntax": {
+                "WEB": "var(--card-foreground)"
+              }
+            },
+            "border": {
+              "$scopes": ["STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#D4D6D8",
+              "$description": "Border color - Sleeker aesthetic",
+              "$codeSyntax": {
+                "WEB": "var(--border)"
+              }
+            },
+            "input": {
+              "$scopes": ["STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#D4D6D8",
+              "$description": "Input field borders",
+              "$codeSyntax": {
+                "WEB": "var(--input)"
+              }
+            },
+            "ring": {
+              "$scopes": ["STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#3D6A9E",
+              "$description": "Focus ring color",
+              "$codeSyntax": {
+                "WEB": "var(--ring)"
+              }
+            },
+            "destructive": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#DC2626",
+              "$description": "Error/destructive states",
+              "$codeSyntax": {
+                "WEB": "var(--destructive)"
+              }
+            },
+            "destructive-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF",
+              "$description": "Text on destructive backgrounds",
+              "$codeSyntax": {
+                "WEB": "var(--destructive-foreground)"
+              }
+            }
+          }
+        },
+        "Dark Mode": {
+          "brand": {
+            "charcoal": {
+              "$scopes": ["ALL_FILLS", "STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$codeSyntax": {
+                "WEB": "var(--color-charcoal)"
+              }
+            },
+            "gray": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#626163",
+              "$codeSyntax": {
+                "WEB": "var(--color-gray)"
+              }
+            },
+            "blue": {
+              "$scopes": ["ALL_FILLS", "STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#5A8BC4",
+              "$description": "Lighter blue for dark mode (WCAG AA compliant)",
+              "$codeSyntax": {
+                "WEB": "var(--color-blue)"
+              }
+            },
+            "gold": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FCC647",
+              "$description": "Brighter gold for dark mode",
+              "$codeSyntax": {
+                "WEB": "var(--color-gold)"
+              }
+            },
+            "silver": {
+              "$scopes": ["ALL_FILLS", "STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#D4D6D8",
+              "$description": "Silver - Subtle borders (lightened for sleeker look)",
+              "$codeSyntax": {
+                "WEB": "var(--color-silver)"
+              }
+            },
+            "cream": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F1F0EF",
+              "$codeSyntax": {
+                "WEB": "var(--color-cream)"
+              }
+            }
+          },
+          "neutral": {
+            "white": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF"
+            },
+            "accent-light": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#4D5359",
+              "$description": "Darker accent for dark mode"
+            }
+          },
+          "semantic": {
+            "background": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$description": "Dark background",
+              "$codeSyntax": {
+                "WEB": "var(--background)"
+              }
+            },
+            "foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F1F0EF",
+              "$description": "Light text on dark background",
+              "$codeSyntax": {
+                "WEB": "var(--foreground)"
+              }
+            },
+            "primary": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#5A8BC4",
+              "$description": "Lighter primary for dark mode",
+              "$codeSyntax": {
+                "WEB": "var(--primary)"
+              }
+            },
+            "primary-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF",
+              "$codeSyntax": {
+                "WEB": "var(--primary-foreground)"
+              }
+            },
+            "secondary": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FCC647",
+              "$description": "Brighter secondary for dark mode",
+              "$codeSyntax": {
+                "WEB": "var(--secondary)"
+              }
+            },
+            "secondary-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#0A0A0B",
+              "$codeSyntax": {
+                "WEB": "var(--secondary-foreground)"
+              }
+            },
+            "accent": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#4D5359",
+              "$description": "Subtle highlights in dark mode",
+              "$codeSyntax": {
+                "WEB": "var(--accent)"
+              }
+            },
+            "accent-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F1F0EF",
+              "$codeSyntax": {
+                "WEB": "var(--accent-foreground)"
+              }
+            },
+            "muted": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#3F3F40",
+              "$codeSyntax": {
+                "WEB": "var(--muted)"
+              }
+            },
+            "muted-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#BBC0C5",
+              "$codeSyntax": {
+                "WEB": "var(--muted-foreground)"
+              }
+            },
+            "card": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#141414",
+              "$codeSyntax": {
+                "WEB": "var(--card)"
+              }
+            },
+            "card-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#F1F0EF",
+              "$codeSyntax": {
+                "WEB": "var(--card-foreground)"
+              }
+            },
+            "border": {
+              "$scopes": ["STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#3F3F40",
+              "$codeSyntax": {
+                "WEB": "var(--border)"
+              }
+            },
+            "input": {
+              "$scopes": ["STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#3F3F40",
+              "$codeSyntax": {
+                "WEB": "var(--input)"
+              }
+            },
+            "ring": {
+              "$scopes": ["STROKE_COLOR"],
+              "$type": "color",
+              "$value": "#5A8BC4",
+              "$codeSyntax": {
+                "WEB": "var(--ring)"
+              }
+            },
+            "destructive": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#7F1D1D",
+              "$description": "Darker destructive for dark mode",
+              "$codeSyntax": {
+                "WEB": "var(--destructive)"
+              }
+            },
+            "destructive-foreground": {
+              "$scopes": ["ALL_FILLS"],
+              "$type": "color",
+              "$value": "#FFFFFF",
+              "$codeSyntax": {
+                "WEB": "var(--destructive-foreground)"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]

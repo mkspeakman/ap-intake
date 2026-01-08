@@ -4,48 +4,113 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* ============================================
+       DESIGN TOKENS - Base Colors
+       ============================================ */
+    
+    /* Color Primitives (Hex) */
+    --color-neutral-950: #0A0A0B;  /* color1 - Deep charcoal */
+    --color-neutral-600: #626163;  /* color2 - Medium gray */
+    --color-blue-500: #3D6A9E;     /* color3 - Primary blue (WCAG AA: 4.5:1) */
+    --color-amber-500: #FCB716;    /* color4 - Accent gold */
+    --color-neutral-300: #D4D6D8;  /* color5 - Sleeker borders (1.5:1 on cream) */
+    --color-neutral-50: #F1F0EF;   /* color6 - Off-white */
+    --color-neutral-100: #F3F4F5;  /* Accent hover - Very subtle (96% lightness) */
+    
+    /* Color Primitives (OKLCH for future use) */
+    --color-neutral-950-oklch: 0.145 0.002 286.1;
+    --color-neutral-600-oklch: 0.494 0.003 308.4;
+    --color-blue-500-oklch: 0.560 0.080 240.5;     /* Updated for #3D6A9E */
+    --color-amber-500-oklch: 0.822 0.167 80.5;
+    --color-neutral-300-oklch: 0.860 0.003 247.9;  /* Updated for #D4D6D8 */
+    --color-neutral-50-oklch: 0.956 0.002 67.8;
+    
+    /* ============================================
+       SEMANTIC TOKENS - Light Mode
+       ============================================ */
+    
+    /* Backgrounds */
+    --background: 30 9% 94.5%;         /* Soft off-white (color6) */
+    --foreground: 270 8% 4%;           /* Deep charcoal text (color1) */
+    
+    /* Cards & Elevated Surfaces */
+    --card: 0 0% 100%;                 /* Pure white for cards */
+    --card-foreground: 270 8% 4%;      /* Dark text on cards */
+    
+    /* Popovers & Dropdowns */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: 270 8% 4%;
+    
+    /* Primary Action Color */
+    --primary: 210 45% 43%;            /* Blue #3D6A9E - WCAG AA 4.5:1 */
+    --primary-foreground: 0 0% 100%;   /* White text on primary */
+    
+    /* Secondary/Highlight Color */
+    --secondary: 43 97% 54%;           /* Gold/Amber (color4) #FCB716 */
+    --secondary-foreground: 270 8% 4%; /* Dark text on secondary */
+    
+    /* Muted/Subtle Elements */
+    --muted: 208 9% 76%;               /* Light gray (color5) */
+    --muted-foreground: 300 2% 38%;    /* Medium gray text (color2) */
+    
+    /* Accent Color (alternative to primary) */
+    --accent: 210 8% 96%;              /* Very subtle gray - Sleek aesthetic */
+    --accent-foreground: 270 8% 4%;    /* Dark text on light accent */
+    
+    /* Destructive/Error States */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Borders & Inputs */
+    --border: 210 13% 84%;             /* Light gray #D4D6D8 - Sleeker aesthetic */
+    --input: 210 13% 84%;              /* Input borders */
+    --ring: 210 45% 43%;               /* Focus ring (primary blue) */
+    
+    /* Border Radius */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* ============================================
+       SEMANTIC TOKENS - Dark Mode
+       ============================================ */
+    
+    /* Backgrounds */
+    --background: 270 8% 4%;           /* Deep charcoal (color1) */
+    --foreground: 30 9% 94.5%;         /* Off-white text (color6) */
+    
+    /* Cards & Elevated Surfaces */
+    --card: 270 8% 8%;                 /* Slightly lighter than bg */
+    --card-foreground: 30 9% 94.5%;    /* Light text on cards */
+    
+    /* Popovers & Dropdowns */
+    --popover: 270 8% 8%;
+    --popover-foreground: 30 9% 94.5%;
+    
+    /* Primary Action Color */
+    --primary: 213 50% 70%;            /* Lighter blue for dark mode */
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary/Highlight Color */
+    --secondary: 43 97% 60%;           /* Brighter gold for dark mode */
+    --secondary-foreground: 270 8% 4%;
+    
+    /* Muted/Subtle Elements */
+    --muted: 300 2% 25%;               /* Darker muted */
+    --muted-foreground: 208 9% 76%;    /* Light gray text */
+    
+    /* Accent Color */
+    --accent: 210 8% 30%;              /* Medium gray for dark mode */
+    --accent-foreground: 30 9% 94.5%;
+    
+    /* Destructive/Error States */
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Borders & Inputs */
+    --border: 300 2% 25%;
+    --input: 300 2% 25%;
+    --ring: 213 40% 65%;
   }
 }
 
@@ -55,5 +120,42 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* ============================================
+     UTILITY CLASSES - Brand Colors
+     ============================================ */
+  
+  /* Quick access to brand colors for special cases */
+  .text-brand-blue { color: #618DC1; }
+  .bg-brand-blue { background-color: #618DC1; }
+  .border-brand-blue { border-color: #618DC1; }
+  
+  .text-brand-gold { color: #FCB716; }
+  .bg-brand-gold { background-color: #FCB716; }
+  .border-brand-gold { border-color: #FCB716; }
+  
+  /* ============================================
+     COMPONENT PATTERNS
+     ============================================ */
+  
+  /* Tag/Badge pattern for selected items */
+  .tag-primary {
+    @apply inline-flex items-center gap-1 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm;
+  }
+  
+  .tag-accent {
+    @apply inline-flex items-center gap-1 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm;
+  }
+  
+  .tag-secondary {
+    @apply inline-flex items-center gap-1 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm;
+  }
+  
+  /* Remove button within tags */
+  .tag-remove-btn {
+    @apply hover:opacity-90 rounded-full p-0.5 transition-opacity;
   }
 }

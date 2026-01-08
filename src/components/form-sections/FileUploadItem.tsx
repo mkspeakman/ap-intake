@@ -24,11 +24,11 @@ export function FileUploadItem({ data, index, onRemove }: FileUploadItemProps) {
       case 'pending':
         return <FileText className="h-4 w-4 text-muted-foreground" />;
       case 'uploading':
-        return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />;
+        return <Loader2 className="h-4 w-4 text-primary animate-spin" />;
       case 'complete':
-        return <CheckCircle className="h-4 w-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-accent" />;
       case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
+        return <AlertCircle className="h-4 w-4 text-destructive" />;
     }
   };
 
@@ -66,9 +66,9 @@ export function FileUploadItem({ data, index, onRemove }: FileUploadItemProps) {
         {/* Status and remove button */}
         <div className="flex items-center gap-2">
           <span className={`text-xs whitespace-nowrap ${
-            status === 'error' ? 'text-red-500' : 
-            status === 'complete' ? 'text-green-600' :
-            status === 'uploading' ? 'text-blue-500' :
+            status === 'error' ? 'text-destructive' : 
+            status === 'complete' ? 'text-accent' :
+            status === 'uploading' ? 'text-primary' :
             'text-muted-foreground'
           }`}>
             {getStatusText()}

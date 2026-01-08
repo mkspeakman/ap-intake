@@ -232,7 +232,7 @@ export default function SubmissionHistory() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            className="flex items-center gap-1 text-primary hover:opacity-80"
                           >
                             <ExternalLink className="h-4 w-4" />
                           </a>

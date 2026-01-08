@@ -54,13 +54,13 @@ export function FinishRequirementsSection({
             {finishes.map((finish) => (
               <span
                 key={finish}
-                className="inline-flex items-center gap-1 bg-purple-600 text-white px-3 py-1 rounded-full text-sm"
+                className="inline-flex items-center gap-1 bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm"
               >
                 {finish}
                 <button
                   type="button"
                   onClick={() => onFinishRemove(finish)}
-                  className="hover:bg-purple-700 rounded-full p-0.5"
+                  className="hover:opacity-90 rounded-full p-0.5"
                 >
                   <X className="h-3 w-3" />
                 </button>

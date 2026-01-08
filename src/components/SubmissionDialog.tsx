@@ -55,13 +55,13 @@ export function SubmissionDialog({
           <DialogTitle className="flex items-center gap-2">
             {step === 'complete' && (
               <>
-                <CheckCircle className="h-5 w-5 text-green-600" />
+                <CheckCircle className="h-5 w-5 text-accent" />
                 Submission Complete
               </>
             )}
             {step === 'error' && (
               <>
-                <AlertCircle className="h-5 w-5 text-red-600" />
+                <AlertCircle className="h-5 w-5 text-destructive" />
                 Submission Error
               </>
             )}
@@ -81,9 +81,9 @@ export function SubmissionDialog({
               <div className="mt-0.5">
                 {step === 'database' && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                 {(step === 'uploading' || step === 'linking' || step === 'complete') && (
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <CheckCircle className="h-5 w-5 text-accent" />
                 )}
-                {step === 'error' && <AlertCircle className="h-5 w-5 text-red-600" />}
+                {step === 'error' && <AlertCircle className="h-5 w-5 text-destructive" />}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export function SubmissionDialog({
                 <div className="mt-0.5">
                   {step === 'uploading' && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
                   {(step === 'linking' || step === 'complete') && (
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-5 w-5 text-accent" />
                   )}
                   {step === 'error' && <AlertCircle className="h-5 w-5 text-muted-foreground" />}
                 </div>
@@ -131,9 +131,9 @@ export function SubmissionDialog({
                 {files.map((file, index) => (
                   <div key={index} className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                     <div className="flex-shrink-0">
-                      {file.status === 'uploading' && <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />}
-                      {file.status === 'complete' && <CheckCircle className="h-4 w-4 text-green-500" />}
-                      {file.status === 'error' && <AlertCircle className="h-4 w-4 text-red-500" />}
+                      {file.status === 'uploading' && <Loader2 className="h-4 w-4 text-primary animate-spin" />}
+                      {file.status === 'complete' && <CheckCircle className="h-4 w-4 text-accent" />}
+                      {file.status === 'error' && <AlertCircle className="h-4 w-4 text-destructive" />}
                       {file.status === 'pending' && <FileText className="h-4 w-4 text-muted-foreground" />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -154,7 +154,7 @@ export function SubmissionDialog({
               <div className="flex items-start gap-3">
                 <div className="mt-0.5">
                   {step === 'linking' && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
-                  {step === 'complete' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                  {step === 'complete' && <CheckCircle className="h-5 w-5 text-accent" />}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">Finalizing submission</p>
@@ -168,19 +168,19 @@ export function SubmissionDialog({
 
           {/* Success/Error Message */}
           {step === 'complete' && (
-            <div className="rounded-lg bg-green-50 dark:bg-green-950/20 p-4 border border-green-200 dark:border-green-900">
-              <p className="text-sm text-green-900 dark:text-green-100">
+            <div className="rounded-lg bg-accent/10 p-4 border border-accent/20">
+              <p className="text-sm text-foreground font-medium">
                 {message || 'Your project has been successfully submitted and saved to the database. Files have been uploaded to Google Drive.'}
               </p>
             </div>
           )}
 
           {step === 'error' && (
-            <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-4 border border-red-200 dark:border-red-900">
-              <p className="text-sm font-medium text-red-900 dark:text-red-100">
+            <div className="rounded-lg bg-destructive/10 p-4 border border-destructive/20">
+              <p className="text-sm font-medium text-destructive">
                 {error || 'An error occurred during submission'}
               </p>
-              <p className="text-xs text-red-700 dark:text-red-300 mt-2">
+              <p className="text-xs text-destructive/80 mt-2">
                 {message}
               </p>
             </div>

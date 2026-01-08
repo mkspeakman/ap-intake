@@ -56,13 +56,13 @@ export function MaterialRequirementsSection({
             {materials.map((material) => (
               <span
                 key={material}
-                className="inline-flex items-center gap-1 bg-blue-600 text-white px-3 py-1 rounded-full text-sm"
+                className="inline-flex items-center gap-1 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm"
               >
                 {material}
                 <button
                   type="button"
                   onClick={() => onMaterialRemove(material)}
-                  className="hover:bg-blue-700 rounded-full p-0.5"
+                  className="hover:opacity-90 rounded-full p-0.5"
                 >
                   <X className="h-3 w-3" />
                 </button>

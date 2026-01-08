@@ -7,6 +7,7 @@ import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRe
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
 import { SubmissionDialog } from '@/components/SubmissionDialog';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
+import { ColorPalette } from './components/ColorPalette';
 
 // Use proxy path for local development to avoid CORS issues
 // In production (Vercel), use Vercel serverless function
@@ -336,6 +337,7 @@ export default function ManufacturingIntakeForm() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center sm:p-2 md:p-8">
+      <ColorPalette />
       <Card className="w-full max-w-4xl overflow-visible">
         <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
           <div className="text-left">
@@ -407,7 +409,7 @@ export default function ManufacturingIntakeForm() {
             type="submit"
             form="quote-form"
             size="lg" 
-            className="px-8 bg-blue-600 hover:bg-blue-700"
+            className="px-8 bg-primary text-primary-foreground hover:opacity-90"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit Quote Request'}

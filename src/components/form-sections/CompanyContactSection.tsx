@@ -36,7 +36,7 @@ export function CompanyContactSection({
 
   return (
     <div className={`border-y rounded-lg py-4 transition-colors ${
-      !isExpanded ? 'hover:bg-accent/50' : ''
+      !isExpanded ? 'hover:bg-accent' : ''
     }`}>
       <div 
         className={`flex items-start justify-between ${
@@ -77,7 +77,7 @@ export function CompanyContactSection({
       </div>
 
       <div 
-        className={`grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t mt-4 overflow-hidden transition-all ${
+        className={`grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t mt-4 transition-all ${
           isExpanded ? 'animate-accordion-down' : 'animate-accordion-up'
         }`}
         style={{
@@ -85,6 +85,7 @@ export function CompanyContactSection({
           marginTop: isExpanded ? '1rem' : '0',
           paddingTop: isExpanded ? '1rem' : '0',
           borderTopWidth: isExpanded ? '1px' : '0',
+          overflow: isExpanded ? 'visible' : 'hidden',
         }}
       >
         <div>
