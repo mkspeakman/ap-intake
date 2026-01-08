@@ -114,20 +114,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const { status, company_name, from_date, to_date } = req.query;
 
+      // Ensure query params are strings, not arrays
+      const statusStr = Array.isArray(status) ? status[0] : status;
+      const companyNameStr = Array.isArray(company_name) ? company_name[0] : company_name;
+      const fromDateStr = Array.isArray(from_date) ? from_date[0] : from_date;
+      const toDateStr = Array.isArray(to_date) ? to_date[0] : to_date;
+
       let queryStr = 'SELECT * FROM quote_requests WHERE 1=1';
       const conditions = [];
 
-      if (status) {
-        conditions.push(sql`status = ${status}`);
+      if (statusStr) {
+        conditions.push(sql`status = ${statusStr}`);
       }
-      if (company_name) {
-        conditions.push(sql`company_name ILIKE ${'%' + company_name + '%'}`);
+      if (companyNameStr) {
+        conditions.push(sql`company_name ILIKE ${'%' + companyNameStr + '%'}`);
       }
-      if (from_date) {
-        conditions.push(sql`created_at >= ${from_date}`);
+      if (fromDateStr) {
+        conditions.push(sql`created_at >= ${fromDateStr}`);
       }
-      if (to_date) {
-        conditions.push(sql`created_at <= ${to_date}`);
+      if (toDateStr) {
+        conditions.push(sql`created_at <= ${toDateStr}`);
       }
 
       const result = await sql`

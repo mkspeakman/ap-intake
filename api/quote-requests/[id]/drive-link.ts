@@ -20,12 +20,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const { id } = req.query;
       const { drive_file_id, drive_link } = req.body;
 
+      // Ensure id is a string, not an array
+      const quoteId = Array.isArray(id) ? id[0] : id;
+
       await sql`
         UPDATE quote_requests 
         SET drive_file_id = ${drive_file_id}, 
             drive_link = ${drive_link}, 
             updated_at = CURRENT_TIMESTAMP 
-        WHERE id = ${id}
+        WHERE id = ${quoteId}
       `;
 
       return res.json({

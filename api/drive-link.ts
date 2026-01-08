@@ -24,12 +24,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Quote ID is required' });
       }
 
+      // Ensure id is a string, not an array
+      const quoteId = Array.isArray(id) ? id[0] : id;
+
       await sql`
         UPDATE quote_requests 
         SET drive_file_id = ${drive_file_id}, 
             drive_link = ${drive_link}, 
             updated_at = CURRENT_TIMESTAMP 
-        WHERE id = ${id}
+        WHERE id = ${quoteId}
       `;
 
       return res.json({
