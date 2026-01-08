@@ -7,7 +7,6 @@ import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRe
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
 import { SubmissionDialog } from '@/components/SubmissionDialog';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
-import { ColorPalette } from './components/ColorPalette';
 
 // Use proxy path for local development to avoid CORS issues
 // In production (Vercel), use Vercel serverless function
@@ -142,8 +141,6 @@ export default function ManufacturingIntakeForm() {
 
     try {
       // STEP 1: Save to database FIRST (reliable, local)
-      console.log('Step 1: Saving to database...');
-      
       const dbPayload = {
         quote_number: quoteNumber,
         company_name: form.companyName,
@@ -177,16 +174,12 @@ export default function ManufacturingIntakeForm() {
         if (dbResponse.ok) {
           const dbData = await dbResponse.json();
           dbQuoteId = dbData.data.id;
-          console.log('✓ Database save successful:', dbData);
-        } else {
-          console.warn('Database save failed (non-critical):', await dbResponse.text());
         }
       } catch (dbError) {
-        console.warn('Database save failed (non-critical):', dbError);
+        // Database save failed but continue with webhook
       }
 
       // STEP 2: Submit to n8n webhook (can fail, not critical since data is saved)
-      console.log('Step 2: Submitting to n8n webhook...');
       setDialogState({
         step: 'uploading',
         message: 'Uploading files...',
@@ -211,8 +204,7 @@ export default function ManufacturingIntakeForm() {
       formData.append('certifications', JSON.stringify(form.certifications));
       
       // Add files
-      form.files.forEach((file, index) => {
-        console.log(`Adding file ${index}:`, file.name, file.type, file.size, 'bytes');
+      form.files.forEach((file) => {
         formData.append('files', file);
       });
 
@@ -234,8 +226,6 @@ export default function ManufacturingIntakeForm() {
         xhr.send(formData);
       });
 
-      console.log('n8n webhook response status:', response.status);
-
       let webhookData;
       let webhookSuccessful = false;
 
@@ -243,7 +233,6 @@ export default function ManufacturingIntakeForm() {
         try {
           webhookData = JSON.parse(response.responseText);
           webhookSuccessful = true;
-          console.log('✓ n8n webhook successful:', webhookData);
 
           // STEP 3: Update database with Google Drive link (if we have dbQuoteId)
           if (dbQuoteId && webhookData?.webViewLink) {
@@ -260,17 +249,13 @@ export default function ManufacturingIntakeForm() {
                   drive_link: webhookData.webViewLink,
                 }),
               });
-              console.log('✓ Database updated with Google Drive link');
             } catch (updateError) {
-              console.warn('Failed to update database with Drive link:', updateError);
+              // Failed to update database with Drive link
             }
           }
         } catch (e) {
-          console.warn('Failed to parse webhook response:', e);
           webhookData = { message: response.responseText };
         }
-      } else {
-        console.warn('n8n webhook failed with status:', response.status);
       }
 
       // Mark all files as complete
@@ -306,7 +291,7 @@ export default function ManufacturingIntakeForm() {
       });
       setFileUploadData([]);
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error('Submission error:', error); // Keep for production error tracking
       
       // Mark all files as error
       setFileUploadData((prev) =>
@@ -337,7 +322,6 @@ export default function ManufacturingIntakeForm() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center sm:p-2 md:p-8">
-      <ColorPalette />
       <Card className="w-full max-w-4xl overflow-visible">
         <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
           <div className="text-left">

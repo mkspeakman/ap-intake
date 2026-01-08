@@ -11,7 +11,6 @@ import {
   Calendar,
   Building2,
   Package,
-  Clock,
   ChevronDown,
   FileText
 } from 'lucide-react';
