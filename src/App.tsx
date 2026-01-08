@@ -334,7 +334,7 @@ export default function ManufacturingIntakeForm() {
       </header>
 
       {/* Main Content with top padding for fixed header */}
-      <div className="relative top-[48px] min-h-screen bg-card flex items-center justify-center sm:p-2 md:p-8 pt-16">
+      <div className="relative top-[48px] min-h-screen bg-card flex items-center justify-center sm:p-2 md:p-8 lg:pt-16">
         <Card className="w-full max-w-4xl overflow-visible">
         <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
           <div className="text-left">
