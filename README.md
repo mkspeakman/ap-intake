@@ -1,211 +1,198 @@
-# AP Intake - Quote Request Application
+# AP-AI Manufacturing Quote Request System
 
-A modern single-page web application built with Vite, React, TypeScript, Tailwind CSS, and shadCN UI for collecting customer quote requests.
+A modern web application for collecting and managing manufacturing quote requests with user authentication, file uploads, and database integration.
 
-## Features
+## 🚀 Features
 
-- ✨ Modern, responsive UI with shadCN components
-- 🎨 Tailwind CSS for styling
-- 📝 Modular form with 8 separate components
-- 📊 Database integration (SQLite local, PostgreSQL production)
-- 🔌 n8n webhook integration with Google Drive
+### Core Functionality
+- **Quote Request Form** - Comprehensive intake form for manufacturing projects
+- **Submission History** - View and manage all submitted quotes (authenticated users)
+- **User Authentication** - Login system with role-based permissions
+- **File Upload** - Multi-file upload with progress tracking to Google Drive
+- **Real-time Processing** - N8N webhook integration for automated workflows
+
+### Technical Features
+- ✨ Modern, responsive UI with shadcN components
+- 🎨 Tokenized design system with customizable typography
+- 🔐 Role-based access control (RBAC)
+- 📊 Vercel Postgres database integration
+- 🔌 N8N webhook integration
 - 📁 File upload with progress tracking
-- 🎯 Database-first submission strategy for reliability
-- 🚀 Fast development with Vite and HMR
+- 🚀 Built with Vite, React 19, TypeScript
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 - **Vite** - Build tool and dev server
-- **React 19** - UI framework
+- **React 19** - UI framework with latest features
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS
-- **shadCN UI** - Component library (Radix UI primitives)
-- **Axios** - HTTP client for API requests
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcN UI** - Component library (Radix UI primitives)
+- **Lucide React** - Icon library
 
-### Backend
-- **Express.js** - Local development server
-- **SQLite** (better-sqlite3) - Local database
-- **PostgreSQL** (Neon) - Production database on Vercel
-- **Vercel Serverless Functions** - Production API
+### Backend & Infrastructure
+- **Vercel Serverless Functions** - Production API endpoints
+- **Vercel Postgres** - Production database (Neon)
+- **N8N** - Workflow automation (webhook integration)
+- **Google Drive API** - File storage
 
-## Getting Started
-
-### Prerequisites
+## 📋 Prerequisites
 
 - Node.js 18+ and npm
+- Vercel account (for deployment)
+- N8N webhook URL (for file processing)
+- Vercel Postgres database (auto-configured on Vercel)
+
+## 🚀 Getting Started
 
 ### Installation
 
-1. Install dependencies:
-   ```bash
+1. **Clone and install dependencies:**
+   \`\`\`bash
    npm install
-   ```
+   \`\`\`
 
-2. Copy the environment variables file:
-   ```bash
+2. **Set up environment variables:**
+   \`\`\`bash
    cp .env.example .env
-   ```
-
-3. Update the `.env` file with your API credentials:
-   - `VITE_N8N_WEBHOOK_URL` - Your N8N webhook URL
-   - `VITE_GOOGLE_API_KEY` - Your Google API key (if using)
-   - `VITE_GOOGLE_CLIENT_ID` - Your Google OAuth client ID (if using)
+   \`\`\`
+   
+   Update \`.env\` with your N8N webhook URL:
+   \`\`\`
+   VITE_N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/your-id
+   \`\`\`
 
 ### Development
 
-1. **Install frontend dependencies:**
-   ```bash
-   npm install
-   ```
+**Option 1: Local Development (without database)**
+\`\`\`bash
+npm run dev
+\`\`\`
+- Available at http://localhost:5173
+- Form submissions work
+- History view shows "no database" message
+- Authentication uses mock data
 
-2. **Setup and start the backend server:**
-   ```bash
-   cd server
-   npm install
-   npm run init-db  # Creates SQLite database
-   npm run dev      # Starts server on http://localhost:3001
-   ```
+**Option 2: Vercel Dev (with database)**
+\`\`\`bash
+vercel dev
+\`\`\`
+- Available at http://localhost:3000
+- Full database connectivity
+- Real authentication
+- Complete feature set
 
-3. **Start the frontend (in a new terminal):**
-   ```bash
-   npm run dev  # Available at http://localhost:5173
-   ```
+### Database Setup
 
-The Vite dev proxy automatically routes:
-- `/api/webhook` → n8n webhook (file uploads)
-- `/api/*` → Local Express server (database operations)
+Run these SQL files in your Vercel Postgres dashboard:
 
-### Build
+1. **Quote requests table:**
+   \`\`\`bash
+   database/schema-postgres.sql
+   \`\`\`
 
-Build for production:
+2. **Users table (for authentication):**
+   \`\`\`bash
+   database/schema-users.sql
+   \`\`\`
 
-```bash
-npm run build
-```
+### Default Test Credentials
 
-Preview the production build:
+**Local development** (\`npm run dev\`):
+- Email: \`test@example.com\`
+- Password: \`password\`
 
-```bash
-npm run preview
-```
+**Production/Vercel dev** - Add users manually to database
 
-## Project Structure
+## 📁 Project Structure
 
-```
+\`\`\`
 ap-intake/
-├── api/                          # Vercel serverless functions (production)
-│   ├── quote-requests.ts         # Create/list quotes
-│   ├── quote-requests/[id]/
-│   │   └── drive-link.ts         # Update Drive links
-│   ├── db.ts                     # Database helpers
-│   └── webhook.js                # n8n CORS proxy
-├── database/
-│   ├── schema.sql                # SQLite schema (local)
-│   └── schema-postgres.sql       # PostgreSQL schema (Vercel)
-├── server/                       # Express backend (local dev)
-│   ├── index.ts                  # API routes
-│   └── package.json
+├── api/                      # Vercel Serverless Functions
+│   ├── auth/
+│   │   └── login.ts         # Authentication endpoint
+│   ├── db.ts                # Database utilities
+│   ├── quote-requests.ts    # Quote CRUD operations
+│   └── drive-link.ts        # Google Drive integration
 ├── src/
 │   ├── components/
-│   │   ├── form-sections/        # 8 modular form components
-│   │   └── ui/                   # shadCN UI components
-│   ├── lib/
-│   │   ├── api-client.ts         # Axios configuration
-│   │   └── utils.ts              # Utility functions
-│   ├── services/
-│   │   ├── database.service.ts   # Database API calls
-│   │   ├── n8n.service.ts        # n8n webhook integration
-│   │   └── google.service.ts     # Google API (future)
-│   ├── types/
-│   │   └── database.types.ts     # TypeScript types
-│   ├── App.tsx                   # Main form orchestration
-│   └── main.tsx                  # Application entry point
-├── DATABASE_SETUP.md             # Local database guide
-├── VERCEL_DATABASE.md            # Production deployment guide
-└── package.json
-```
+│   │   ├── ui/              # shadcN UI components
+│   │   ├── form-sections/   # Form component modules
+│   │   ├── Layout.tsx       # Main layout with nav/auth
+│   │   ├── LoginModal.tsx   # Authentication modal
+│   │   └── SubmissionDialog.tsx  # Upload progress dialog
+│   ├── contexts/
+│   │   └── AuthContext.tsx  # Authentication state management
+│   ├── services/            # API clients
+│   ├── types/               # TypeScript definitions
+│   ├── App.tsx              # Quote request form
+│   ├── SubmissionHistory.tsx # History view
+│   └── Router.tsx           # Route handling
+├── database/                # SQL schema files
+├── public/                  # Static assets
+└── vercel.json             # Vercel configuration
+\`\`\`
 
-## Architecture
+## 🔐 Authentication & Permissions
 
-### Database-First Submission Strategy
+### User Roles
+Users in the database have permissions:
+- \`can_view_history\` - Access to submission history page
 
-The application uses a **dual-submission approach** for reliability:
+### Navigation Behavior
+- **Not authenticated:** Only form view available, user icon shows login modal
+- **Authenticated (no history permission):** Form view + user dropdown
+- **Authenticated (with history permission):** Form view + History view + user dropdown
 
-1. **Database (Primary)** - Fast, reliable, queryable
-   - Form data saved to database immediately
-   - Returns quote ID
-   - Enables history display and future CRUD operations
-   
-2. **n8n Webhook (Secondary)** - Business process integration
-   - Uploads files to Google Drive
-   - Creates organized folder structure
-   - Returns Drive link
-   
-3. **Link Systems** - Complete the data model
-   - Database record updated with Drive link
-   - Full traceability between systems
+### Adding Users
+\`\`\`sql
+INSERT INTO users (email, password_hash, name, can_view_history)
+VALUES 
+  ('user@example.com', 'hashed-password', 'User Name', true);
+\`\`\`
 
-**Why this approach?**
-- Database saves are fast and reliable
-- n8n can fail without losing form data
-- Queryable data enables AI agents and analytics
-- Google Drive integration maintains human workflow
+## 🚀 Deployment
 
-### Environments
+### Deploy to Vercel
 
-**Local Development:**
-- SQLite database (file-based)
-- Express.js API server
-- Vite proxy routes requests
+1. **Push to GitHub**
+2. **Import to Vercel:** Connect your repository at vercel.com
+3. **Configure Environment Variables:** Add \`VITE_N8N_WEBHOOK_URL\`
+4. **Add Postgres Database:** Storage tab → Create → Postgres
+5. **Run Database Migrations:** Execute SQL files in Postgres dashboard
 
-**Production (Vercel):**
-- PostgreSQL database (Neon)
-- Serverless functions
-- Direct API routes
+### Environment Variables
 
-## Deployment
+**Required:**
+- \`VITE_N8N_WEBHOOK_URL\` - Your N8N webhook endpoint
 
-See [VERCEL_DATABASE.md](VERCEL_DATABASE.md) for complete deployment instructions.
+**Auto-configured by Vercel:**
+- \`POSTGRES_URL\`, \`POSTGRES_PRISMA_URL\`, \`POSTGRES_URL_NON_POOLING\`
 
-### Google API Integration
+## 📝 API Endpoints
 
-Helper functions are provided for Google services (Drive, Gmail, Calendar). Configure your Google API credentials in `.env`:
+### Quote Requests
+- \`POST /api/quote-requests\` - Create new quote
+- \`GET /api/quote-requests\` - List all quotes (authenticated)
 
-```typescript
-import { uploadToGoogleDrive, sendGmailEmail } from './services/google.service';
+### Authentication
+- \`POST /api/auth/login\` - User login
 
-// Upload file to Google Drive
-await uploadToGoogleDrive(file);
+## 🧪 Development Commands
 
-// Send email via Gmail
-await sendGmailEmail({ to, subject, body });
-```
+\`\`\`bash
+npm run dev          # Start Vite dev server (port 5173)
+npm run build        # Build for production
+npm run preview      # Preview production build
+vercel dev           # Start with database connection (port 3000)
+\`\`\`
 
-## Form Fields
+## 📚 Documentation
 
-The quote request form includes:
-- Company Name
-- Contact Name
-- Email
-- Phone Number
-- Project Name
-- Project Description
-- Desired Due Date
-- File Upload (supports .pdf, .step, .stp, .igs, .iges, .dxf, .zip)
+- \`TYPOGRAPHY_SYSTEM.md\` - Typography tokens and font swapping
+- \`DATABASE_SETUP.md\` - Database schema details
+- \`VERCEL_SETUP.md\` - Vercel deployment guide
 
-## Customization
+## 📄 License
 
-### Styling
-
-Tailwind CSS and shadCN provide extensive customization options. Modify:
-- `tailwind.config.js` - Tailwind theme configuration
-- `src/index.css` - CSS variables for shadCN components
-
-### Components
-
-Add more shadCN components as needed by manually creating component files in `src/components/ui/`
-
-## License
-
-MIT
+Proprietary - All rights reserved

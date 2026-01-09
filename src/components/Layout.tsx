@@ -1,7 +1,10 @@
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { User, LogOut, Settings } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { LoginModal } from '@/components/LoginModal';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,11 +13,31 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const currentPath = window.location.hash.slice(1) || '/';
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user, logout, isAuthenticated } = useAuth();
   
   const navigateTo = (path: string) => {
     window.location.hash = path;
     window.location.reload();
+  };
+
+  const handleUserClick = () => {
+    if (isAuthenticated) {
+      setDropdownOpen(!dropdownOpen);
+    } else {
+      setLoginModalOpen(true);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setDropdownOpen(false);
+    if (currentPath === '/history') {
+      navigateTo('/');
+    } else {
+      window.location.reload();
+    }
   };
 
   // Close dropdown when clicking outside
@@ -50,55 +73,63 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Navigation */}
           <nav className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigateTo('/')}
-              disabled={currentPath === '/'}
-              className={`h-8 ${
-                currentPath === '/' 
-                  ? 'text-white bg-white/10 cursor-default' 
-                  : 'text-white/70 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              New Request
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigateTo('/history')}
-              disabled={currentPath === '/history'}
-              className={`h-8 ${
-                currentPath === '/history' 
-                  ? 'text-white bg-white/10 cursor-default' 
-                  : 'text-white/70 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              History
-            </Button>
+            {/* Only show navigation items if authenticated */}
+            {isAuthenticated && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigateTo('/')}
+                  disabled={currentPath === '/'}
+                  className={`h-8 ${
+                    currentPath === '/' 
+                      ? 'text-white bg-white/10 cursor-default' 
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  New Request
+                </Button>
+                
+                {user?.permissions.canViewHistory && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigateTo('/history')}
+                    disabled={currentPath === '/history'}
+                    className={`h-8 ${
+                      currentPath === '/history' 
+                        ? 'text-white bg-white/10 cursor-default' 
+                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    History
+                  </Button>
+                )}
+              </>
+            )}
 
             {/* User Menu */}
             <div className="relative" ref={dropdownRef}>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onClick={handleUserClick}
                 className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/5"
               >
                 <User className="h-4 w-4" />
               </Button>
 
-              <DropdownMenu open={dropdownOpen}>
-                <DropdownMenuItem onClick={() => alert('Settings coming soon')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => alert('Logout coming soon')}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenu>
+              {isAuthenticated && (
+                <DropdownMenu open={dropdownOpen}>
+                  <div className="px-2 py-1.5 text-sm font-medium border-b">
+                    {user?.name}
+                  </div>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenu>
+              )}
             </div>
           </nav>
         </div>
@@ -108,6 +139,9 @@ export default function Layout({ children }: LayoutProps) {
       <div className="flex-1 overflow-hidden">
         {children}
       </div>
+
+      {/* Login Modal */}
+      <LoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
     </div>
   );
 }
