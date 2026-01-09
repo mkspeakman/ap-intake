@@ -17,10 +17,8 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: () => '/webhook/project-submission',
       },
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
+      // API routes disabled for local dev - no database connection
+      // Use 'vercel dev' instead of 'npm run dev' to enable API routes
     },
   },
 })

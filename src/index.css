@@ -5,6 +5,46 @@
 @layer base {
   :root {
     /* ============================================
+       TYPOGRAPHY TOKENS - Font Agnostic
+       ============================================ */
+    
+    /* Font Family - Single source of truth */
+    /* --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; */
+    --font-primary: 'Saira', 'Glory', 'SUSE Mono', 'Oxanium', 'Exo 2', sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+    
+    /* Type Scale - Sizes */
+    --text-xs-size: 0.75rem;      /* 12px */
+    --text-sm-size: 0.875rem;     /* 14px */
+    --text-base-size: 1rem;       /* 16px */
+    --text-lg-size: 1.125rem;     /* 18px */
+    --text-xl-size: 1.25rem;      /* 20px */
+    --text-2xl-size: 1.5rem;      /* 24px */
+    --text-3xl-size: 1.875rem;    /* 30px */
+    --text-4xl-size: 2.25rem;     /* 36px */
+    
+    /* Type Scale - Line Heights */
+    --text-xs-line: 1rem;         /* 16px */
+    --text-sm-line: 1.25rem;      /* 20px */
+    --text-base-line: 1.5rem;     /* 24px */
+    --text-lg-line: 1.75rem;      /* 28px */
+    --text-xl-line: 1.75rem;      /* 28px */
+    --text-2xl-line: 2rem;        /* 32px */
+    --text-3xl-line: 2.25rem;     /* 36px */
+    --text-4xl-line: 2.5rem;      /* 40px */
+    
+    /* Font Weights - Semantic */
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    
+    /* Letter Spacing */
+    --tracking-tight: -0.01em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.025em;
+    
+    /* ============================================
        DESIGN TOKENS - Base Colors
        ============================================ */
     
@@ -120,10 +160,43 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-primary);
+    font-size: var(--text-base-size);
+    line-height: var(--text-base-line);
+    font-weight: var(--font-regular);
   }
 }
 
 @layer components {
+  /* ============================================
+     TYPOGRAPHY UTILITIES
+     ============================================ */
+  
+  /* Apply typography tokens - sizes include line-height */
+  .text-xs { font-size: var(--text-xs-size); line-height: var(--text-xs-line); }
+  .text-sm { font-size: var(--text-sm-size); line-height: var(--text-sm-line); }
+  .text-base { font-size: var(--text-base-size); line-height: var(--text-base-line); }
+  .text-lg { font-size: var(--text-lg-size); line-height: var(--text-lg-line); }
+  .text-xl { font-size: var(--text-xl-size); line-height: var(--text-xl-line); }
+  .text-2xl { font-size: var(--text-2xl-size); line-height: var(--text-2xl-line); }
+  .text-3xl { font-size: var(--text-3xl-size); line-height: var(--text-3xl-line); }
+  .text-4xl { font-size: var(--text-4xl-size); line-height: var(--text-4xl-line); }
+  
+  /* Font families */
+  .font-primary { font-family: var(--font-primary); }
+  .font-mono { font-family: var(--font-mono); }
+  
+  /* Weights - semantic names */
+  .font-regular { font-weight: var(--font-regular); }
+  .font-medium { font-weight: var(--font-medium); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .font-bold { font-weight: var(--font-bold); }
+  
+  /* Tracking */
+  .tracking-tight { letter-spacing: var(--tracking-tight); }
+  .tracking-normal { letter-spacing: var(--tracking-normal); }
+  .tracking-wide { letter-spacing: var(--tracking-wide); }
+  
   /* ============================================
      UTILITY CLASSES - Brand Colors
      ============================================ */

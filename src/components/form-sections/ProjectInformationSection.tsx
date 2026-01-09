@@ -73,7 +73,7 @@ export function ProjectInformationSection({
       {/* Left Column - Project Details */}
       <div className="space-y-4">
         <div>
-          <Label htmlFor="projectName" className="text-base font-semibold">
+          <Label htmlFor="projectName" className="text-base font-medium">
             Project Name <span className="text-red-500 text-sm">required</span>
           </Label>
           <Input
@@ -128,7 +128,7 @@ export function ProjectInformationSection({
 
       {/* Right Column - File Upload */}
       <div className="space-y-4">
-        <h3 className="text-base font-semibold">Drawings and Files</h3>
+        <h3 className="text-base font-medium">Drawings and Files</h3>
         
         <div
           className={`border-2 border-dashed rounded-lg px-8 py-0 text-center transition-colors min-h-[204px] flex flex-col items-center justify-center ${

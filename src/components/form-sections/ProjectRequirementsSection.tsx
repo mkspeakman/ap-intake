@@ -59,7 +59,7 @@ export function ProjectRequirementsSection({
       
       <Accordion type="multiple" className="w-full">
         <AccordionItem value="materials">
-          <AccordionTrigger className="text-lg font-semibold">
+          <AccordionTrigger className="text-lg font-medium">
             Material Requirements
           </AccordionTrigger>
           <AccordionContent>
@@ -75,7 +75,7 @@ export function ProjectRequirementsSection({
         </AccordionItem>
 
         <AccordionItem value="finishes">
-          <AccordionTrigger className="text-lg font-semibold">
+          <AccordionTrigger className="text-lg font-medium">
             Finish Requirements
           </AccordionTrigger>
           <AccordionContent>
@@ -91,7 +91,7 @@ export function ProjectRequirementsSection({
         </AccordionItem>
 
         <AccordionItem value="part-requirements">
-          <AccordionTrigger className="text-lg font-semibold">
+          <AccordionTrigger className="text-lg font-medium">
             Part-Level Requirements
           </AccordionTrigger>
           <AccordionContent>
@@ -103,7 +103,7 @@ export function ProjectRequirementsSection({
         </AccordionItem>
 
         <AccordionItem value="certifications">
-          <AccordionTrigger className="text-lg font-semibold">
+          <AccordionTrigger className="text-lg font-medium">
             Certification Requirements
           </AccordionTrigger>
           <AccordionContent>

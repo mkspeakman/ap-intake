@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -53,11 +53,20 @@ export default function SubmissionHistory() {
         throw new Error('Failed to fetch submissions');
       }
       
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        // Not running on Vercel - API routes not available
+        setError('Database not available. Run "vercel dev" for full functionality.');
+        setSubmissions([]);
+        return;
+      }
+      
       const data = await response.json();
       setSubmissions(data.data || []);
     } catch (err) {
       console.error('Error fetching submissions:', err);
-      setError('Failed to load submissions. Please try again.');
+      setError('Database not available. Run "vercel dev" for full functionality.');
+      setSubmissions([]);
     } finally {
       setLoading(false);
     }
@@ -80,7 +89,7 @@ export default function SubmissionHistory() {
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-3xl font-bold">Quote Request History</h1>
+              <h1 className="text-3xl font-medium">Quote Request History</h1>
               <p className="text-sm text-muted-foreground mt-2">
                 View and manage all submitted manufacturing quotes
               </p>
@@ -109,7 +118,7 @@ export default function SubmissionHistory() {
           </div>
 
           {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
             <Card className="bg-muted/50">
               <CardContent className="p-4">
                 <div className="text-2xl font-bold">{submissions.length}</div>
@@ -168,9 +177,8 @@ export default function SubmissionHistory() {
                 </TableHeader>
                 <TableBody>
                   {submissions.map((submission) => (
-                  <>
+                  <React.Fragment key={submission.id}>
                     <TableRow 
-                      key={submission.id}
                       className="cursor-pointer"
                       onClick={() => setSelectedSubmission(
                         selectedSubmission === submission.id ? null : submission.id
@@ -228,7 +236,7 @@ export default function SubmissionHistory() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               {/* Contact Info */}
                               <div className="space-y-2">
-                                <h4 className="text-sm font-semibold">Contact Information</h4>
+                                <h4 className="text-sm font-medium">Contact Information</h4>
                                 <div className="text-sm space-y-1">
                                   <div><span className="text-muted-foreground">Email:</span> {submission.email || 'N/A'}</div>
                                   <div><span className="text-muted-foreground">Contact:</span> {submission.contact_name || 'N/A'}</div>
@@ -240,7 +248,7 @@ export default function SubmissionHistory() {
 
                               {/* Materials & Finishes */}
                               <div className="space-y-2">
-                                <h4 className="text-sm font-semibold">Specifications</h4>
+                                <h4 className="text-sm font-medium">Specifications</h4>
                                 <div className="text-sm space-y-2">
                                   <div>
                                     <span className="text-muted-foreground">Materials:</span>
@@ -291,7 +299,7 @@ export default function SubmissionHistory() {
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>

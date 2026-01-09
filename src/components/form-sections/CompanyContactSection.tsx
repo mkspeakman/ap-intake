@@ -45,7 +45,7 @@ export function CompanyContactSection({
         onClick={() => !isExpanded && setIsExpanded(true)}
       >
         <div>
-          <h2 className="text-xl font-semibold">Client Information</h2>
+          <h2 className="text-xl font-medium">Client Information</h2>
           <p className="text-sm text-muted-foreground mt-1">
             {isExpanded 
               ? 'Clear section for "None Specified"' 

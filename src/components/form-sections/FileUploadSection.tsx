@@ -57,7 +57,7 @@ export function FileUploadSection({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold border-b pb-2">Technical Files</h2>
+      <h2 className="text-lg font-medium border-b pb-2">Technical Files</h2>
       <div>
         <Label>Upload CAD Files & Technical Drawings</Label>
         <div
