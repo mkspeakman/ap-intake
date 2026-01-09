@@ -11,15 +11,24 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const currentPath = window.location.hash.slice(1) || '/';
+  const [currentPath, setCurrentPath] = useState(window.location.hash.slice(1) || '/');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout, isAuthenticated } = useAuth();
   
+  // Listen for hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPath(window.location.hash.slice(1) || '/');
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+  
   const navigateTo = (path: string) => {
     window.location.hash = path;
-    window.location.reload();
   };
 
   const handleUserClick = () => {
@@ -33,11 +42,7 @@ export default function Layout({ children }: LayoutProps) {
   const handleLogout = () => {
     logout();
     setDropdownOpen(false);
-    if (currentPath === '/history') {
-      navigateTo('/');
-    } else {
-      window.location.reload();
-    }
+    navigateTo('/');
   };
 
   // Close dropdown when clicking outside
