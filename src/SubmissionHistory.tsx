@@ -8,9 +8,7 @@ import {
   Search, 
   Filter, 
   ExternalLink, 
-  Calendar,
   Building2,
-  Package,
   ChevronDown,
   FileText
 } from 'lucide-react';
@@ -74,12 +72,6 @@ export default function SubmissionHistory() {
       hour: '2-digit',
       minute: '2-digit',
     }).format(date);
-  };
-
-  const getStatusLabel = (status: string) => {
-    return status.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
   };
 
   return (
