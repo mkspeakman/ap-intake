@@ -112,6 +112,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // GET - List all quotes
   if (req.method === 'GET') {
     try {
+      // Check if running locally without database connection
+      if (!process.env.POSTGRES_URL && process.env.NODE_ENV !== 'production') {
+        // Return mock data for local development
+        return res.json({
+          success: true,
+          data: [],
+          message: 'Local development mode - no database connected'
+        });
+      }
+
       const { status, company_name, from_date, to_date } = req.query;
 
       // Ensure query params are strings, not arrays
