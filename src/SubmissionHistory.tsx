@@ -84,93 +84,67 @@ export default function SubmissionHistory() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-start justify-center p-4 md:p-8">
-      <Card className="w-full max-w-7xl">
-        <CardHeader className="pb-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-3xl font-medium">Quote Request History</h1>
-              <p className="text-sm text-muted-foreground mt-2">
-                View and manage all submitted manufacturing quotes
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
+    <div className="h-full flex flex-col p-6 overflow-hidden">
+      {/* Header Section - Fixed */}
+      <div className="flex-shrink-0 mb-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-medium">Quote Request History</h1>
+            <p className="text-sm text-muted-foreground mt-2">
+              View and manage all submitted manufacturing quotes
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by company, project, or quote number..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Table Section - Scrollable */}
+      <div className="flex-1 min-h-0 border rounded-lg overflow-hidden flex flex-col">
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
+            Loading submissions...
+          </div>
+        ) : error ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-destructive mb-4">{error}</p>
+              <Button onClick={fetchSubmissions} size="sm">
+                Retry
               </Button>
             </div>
           </div>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-          {/* Search Bar */}
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by company, project, or quote number..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+        ) : submissions.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center text-muted-foreground">
+            No submissions found
           </div>
-
-          {/* Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
-            <Card className="bg-muted/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold">{submissions.length}</div>
-                <div className="text-xs text-muted-foreground">Total Requests</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold">{submissions.filter(s => s.drive_link).length}</div>
-                <div className="text-xs text-muted-foreground">Processed</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold">{submissions.filter(s => !s.drive_link).length}</div>
-                <div className="text-xs text-muted-foreground">Pending</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-muted/50">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold">{submissions.filter(s => s.certifications?.length > 0).length}</div>
-                <div className="text-xs text-muted-foreground">With Certifications</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Table */}
-          <div className="border rounded-lg">
-            {loading ? (
-              <div className="p-8 text-center text-muted-foreground">
-                Loading submissions...
-              </div>
-            ) : error ? (
-              <div className="p-8 text-center">
-                <p className="text-destructive mb-4">{error}</p>
-                <Button onClick={fetchSubmissions} size="sm">
-                  Retry
-                </Button>
-              </div>
-            ) : submissions.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                No submissions found
-              </div>
-            ) : (
-              <Table>
+        ) : (
+          <div className="overflow-y-auto overflow-x-auto">
+            <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="w-[150px]">Quote Number</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Project</TableHead>
-                    <TableHead className="w-[100px]">Quantity</TableHead>
                     <TableHead className="w-[185px]">Submitted</TableHead>
+                    <TableHead className="w-[200px]">Submitted by</TableHead>
                     <TableHead className="w-[80px]">Files</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>
@@ -199,10 +173,15 @@ export default function SubmissionHistory() {
                       <TableCell>
                         {submission.project_name}
                       </TableCell>
-                      <TableCell>{submission.quantity}</TableCell>
                       <TableCell>
                         <div className="text-sm">
                           {formatDate(submission.created_at)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <div className="font-medium">{submission.contact_name || 'N/A'}</div>
+                          <div className="text-xs text-muted-foreground">{submission.email || 'N/A'}</div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -303,25 +282,24 @@ export default function SubmissionHistory() {
                 ))}
               </TableBody>
             </Table>
-            )}
           </div>
+        )}
+      </div>
 
-          {/* Pagination Placeholder */}
-          <div className="flex items-center justify-between pt-4">
-            <div className="text-sm text-muted-foreground">
-              Showing {submissions.length} of {submissions.length} results
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" disabled>
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" disabled>
-                Next
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Footer Section - Fixed */}
+      <div className="flex-shrink-0 flex items-center justify-between pt-4">
+        <div className="text-sm text-muted-foreground">
+          Showing {submissions.length} of {submissions.length} results
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" disabled>
+            Previous
+          </Button>
+          <Button variant="outline" size="sm" disabled>
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

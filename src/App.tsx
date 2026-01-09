@@ -321,23 +321,11 @@ export default function ManufacturingIntakeForm() {
   };
 
   return (
-    <>
-      {/* Fixed Header - 48px tall */}
-      <header className="fixed top-0 left-0 right-0 bg-[#0A0A0B] z-50 h-12">
-        <div className="h-full px-6 flex items-center">
-          <img 
-            src="/ap-ai-on-black.svg" 
-            alt="AP-AI Logo" 
-            className="h-6"
-          />
-        </div>
-      </header>
-
-      {/* Main Content with top padding for fixed header */}
-      <div className="relative top-[48px] min-h-screen bg-card flex items-center justify-center sm:p-2 md:p-8 lg:pt-16">
+    <div className="h-full bg-card overflow-y-auto">
+      <div className="min-h-full flex items-center justify-center sm:p-2 md:p-8 lg:py-8">
         <Card className="w-full max-w-4xl overflow-visible">
-        <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
-          <div className="text-left">
+      <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
+        <div className="text-left">
             <h1 className="text-3xl font-medium">Manufacturing Quote Request</h1>
             <p className="text-sm text-muted-foreground mt-2">
               Submit your project details and technical requirements
@@ -397,21 +385,20 @@ export default function ManufacturingIntakeForm() {
             <div className="h-24"></div>
           </form>
         </CardContent>
-        </Card>
+      </Card>
 
-        {/* Fixed Footer with Submit Button */}
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-[0_-2px_10px_rgba(0,0,0,0.05)] py-4 z-50">
-          <div className="text-center">
-            <Button 
-              type="submit"
-              form="quote-form"
-              size="lg" 
-              className="px-8 bg-primary text-primary-foreground hover:opacity-90"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Quote Request'}
-            </Button>
-          </div>
+      {/* Fixed Footer with Submit Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-[0_-2px_10px_rgba(0,0,0,0.05)] py-4 z-50">
+        <div className="text-center">
+          <Button 
+            type="submit"
+            form="quote-form"
+            size="lg" 
+            className="px-8 bg-primary text-primary-foreground hover:opacity-90"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Quote Request'}
+          </Button>
         </div>
       </div>
 
@@ -428,6 +415,7 @@ export default function ManufacturingIntakeForm() {
         error={dialogState.error}
         onClose={handleCloseDialog}
       />
-    </>
+      </div>
+    </div>
   );
 }
