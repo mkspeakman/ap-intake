@@ -130,7 +130,7 @@ export default function SubmissionHistory() {
             </Card>
             <Card className="bg-muted/50">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold">{submissions.filter(s => s.certifications.length > 0).length}</div>
+                <div className="text-2xl font-bold">{submissions.filter(s => s.certifications?.length > 0).length}</div>
                 <div className="text-xs text-muted-foreground">With Certifications</div>
               </CardContent>
             </Card>
@@ -245,7 +245,7 @@ export default function SubmissionHistory() {
                                   <div>
                                     <span className="text-muted-foreground">Materials:</span>
                                     <div className="flex flex-wrap gap-1 mt-1">
-                                      {submission.materials.map((material, i) => (
+                                      {(submission.materials || []).map((material, i) => (
                                         <Badge key={i} variant="outline">{material}</Badge>
                                       ))}
                                     </div>
@@ -253,16 +253,16 @@ export default function SubmissionHistory() {
                                   <div>
                                     <span className="text-muted-foreground">Finishes:</span>
                                     <div className="flex flex-wrap gap-1 mt-1">
-                                      {submission.finishes.map((finish, i) => (
+                                      {(submission.finishes || []).map((finish, i) => (
                                         <Badge key={i} variant="outline">{finish}</Badge>
                                       ))}
                                     </div>
                                   </div>
-                                  {submission.certifications.length > 0 && (
+                                  {(submission.certifications?.length > 0) && (
                                     <div>
                                       <span className="text-muted-foreground">Certifications:</span>
                                       <div className="flex flex-wrap gap-1 mt-1">
-                                        {submission.certifications.map((cert, i) => (
+                                        {(submission.certifications || []).map((cert, i) => (
                                           <Badge key={i} variant="secondary">{cert}</Badge>
                                         ))}
                                       </div>
