@@ -141,13 +141,17 @@ async function enrichEquipmentWithRelations(equipment: any) {
     SELECT preference FROM equipment_preferences WHERE equipment_id = ${equipmentId}
   `;
 
-  // Parse JSON fields
+  // Parse JSON fields (JSONB in Postgres is already an object)
   const work_envelope_mm = equipment.work_envelope_mm 
-    ? JSON.parse(equipment.work_envelope_mm) 
+    ? (typeof equipment.work_envelope_mm === 'string' 
+        ? JSON.parse(equipment.work_envelope_mm) 
+        : equipment.work_envelope_mm)
     : null;
 
   const runtime_metrics = equipment.runtime_metrics 
-    ? JSON.parse(equipment.runtime_metrics) 
+    ? (typeof equipment.runtime_metrics === 'string' 
+        ? JSON.parse(equipment.runtime_metrics) 
+        : equipment.runtime_metrics)
     : null;
 
   return {
