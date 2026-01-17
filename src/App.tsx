@@ -321,12 +321,19 @@ export default function ManufacturingIntakeForm() {
   };
 
   return (
-    <div className="h-full bg-card overflow-y-auto">
+    <div 
+      className="h-full overflow-y-auto bg-card"
+      style={{
+        // backgroundColor: 'hsla(0,0%,100%,1)',
+        backgroundImage: 'radial-gradient(circle at 0% 100%, hsla(41,97%,53%,0.08) 0%,transparent 50%),radial-gradient(circle at 100% 0%, hsla(240,4%,4%,0.03) 0%,transparent 50%)',
+        backgroundBlendMode: 'normal,normal'
+      }}
+    >
       <div className="min-h-full flex items-center justify-center sm:p-2 md:p-8 lg:py-8">
         <Card className="w-full max-w-4xl overflow-visible">
       <CardContent className="p-6 space-y-6 pt-8 overflow-visible">
         <div className="text-left">
-            <h1 className="text-3xl font-medium">Manufacturing Quote Request</h1>
+            <h1 className="text-4xl font-thin">Manufacturing Quote Request</h1>
             <p className="text-sm text-muted-foreground mt-2">
               Submit your project details and technical requirements
             </p>
@@ -394,7 +401,7 @@ export default function ManufacturingIntakeForm() {
             type="submit"
             form="quote-form"
             size="lg" 
-            className="px-8 bg-primary text-primary-foreground hover:opacity-90"
+            className="px-8 bg-primary font-light text-primary-foreground hover:opacity-90 rounded-full shadow-xl"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Submitting...' : 'Submit Quote Request'}

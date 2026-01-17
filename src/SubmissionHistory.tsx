@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Popover, PopoverTrigger, PopoverContent, PopoverOverlay } from '@/components/ui/popover';
 import { 
   Search, 
   Filter, 
@@ -37,6 +38,7 @@ export default function SubmissionHistory() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     fetchSubmissions();
@@ -83,21 +85,73 @@ export default function SubmissionHistory() {
   };
 
   return (
-    <div className="h-full flex flex-col p-6 overflow-hidden">
+    <div className="h-full flex flex-col p-6 overflow-hidden bg-card">
+      {/* Overlay when popover is open */}
+      {filterOpen && <PopoverOverlay onClick={() => setFilterOpen(false)} />}
+      
       {/* Header Section - Fixed */}
       <div className="flex-shrink-0 mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-medium">Quote Request History</h1>
+            <h1 className="text-4xl font-thin">Quote Request History</h1>
             <p className="text-sm text-muted-foreground mt-2">
               View and manage all submitted manufacturing quotes
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
+            <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className='rounded-full'>
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-120">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-medium mb-3">Filter Submissions</h3>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Date Range</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input type="date" placeholder="From" className="text-sm" />
+                        <Input type="date" placeholder="To" className="text-sm" />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Company</label>
+                      <Input placeholder="Filter by company..." className="h-8 text-sm" />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Materials</label>
+                      <Input placeholder="Filter by materials..." className="h-8 text-sm" />
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Status</label>
+                      <select className="w-full h-8 px-3 rounded-md border border-input bg-background text-sm">
+                        <option value="">All</option>
+                        <option value="pending">Pending Files</option>
+                        <option value="complete">Complete</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2 border-t">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => setFilterOpen(false)}>
+                      Reset
+                    </Button>
+                    <Button size="sm" className="flex-1" onClick={() => setFilterOpen(false)}>
+                      Apply Filters
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
