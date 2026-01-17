@@ -108,6 +108,81 @@ CREATE TABLE quote_files (
     INDEX idx_quote_files (quote_request_id)
 );
 
+-- Equipment/Machines table
+CREATE TABLE equipment (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    machine_id VARCHAR(100) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    location VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'available',
+    controller VARCHAR(100),
+    
+    -- Technical Specifications (JSON stored as TEXT in SQLite)
+    work_envelope_mm TEXT,
+    max_spindle_speed_rpm INTEGER,
+    tool_changer_capacity INTEGER,
+    max_part_weight_kg DECIMAL(10,2),
+    min_tolerance_mm DECIMAL(10,5),
+    coolant_type VARCHAR(50),
+    probes_installed BOOLEAN DEFAULT FALSE,
+    
+    -- Scheduling & Cost
+    setup_time_min INTEGER,
+    typical_cycle_time_multiplier DECIMAL(5,2) DEFAULT 1.0,
+    estimated_hourly_rate_usd DECIMAL(10,2),
+    
+    -- Maintenance & Performance (JSON for nested metrics)
+    last_calibrated DATE,
+    runtime_metrics TEXT,
+    
+    -- Additional Info
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_equipment_status (status),
+    INDEX idx_equipment_type (type),
+    INDEX idx_equipment_machine_id (machine_id)
+);
+
+-- Equipment Operations (what the machine can do)
+CREATE TABLE equipment_operations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    equipment_id INTEGER NOT NULL,
+    operation VARCHAR(100) NOT NULL,
+    FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE,
+    UNIQUE(equipment_id, operation)
+);
+
+-- Equipment Fixture Types
+CREATE TABLE equipment_fixtures (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    equipment_id INTEGER NOT NULL,
+    fixture_type VARCHAR(100) NOT NULL,
+    FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE,
+    UNIQUE(equipment_id, fixture_type)
+);
+
+-- Equipment Materials (reuse existing materials table)
+CREATE TABLE equipment_materials (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    equipment_id INTEGER NOT NULL,
+    material_id INTEGER NOT NULL,
+    FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id),
+    UNIQUE(equipment_id, material_id)
+);
+
+-- Equipment Preferences (what the machine is preferred for)
+CREATE TABLE equipment_preferences (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    equipment_id INTEGER NOT NULL,
+    preference VARCHAR(100) NOT NULL,
+    FOREIGN KEY (equipment_id) REFERENCES equipment(id) ON DELETE CASCADE,
+    UNIQUE(equipment_id, preference)
+);
+
 -- Pre-populate certifications
 INSERT INTO certifications (code, name, description) VALUES
     ('itar', 'ITAR Compliant', 'International Traffic in Arms Regulations'),

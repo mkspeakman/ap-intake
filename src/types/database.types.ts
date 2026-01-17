@@ -64,6 +64,53 @@ export interface Certification {
   description?: string;
 }
 
+// Equipment/Machine types
+export interface Equipment {
+  id?: number;
+  machine_id: string;
+  name: string;
+  type: string;
+  location?: string;
+  status: 'available' | 'in_use' | 'maintenance' | 'offline';
+  controller?: string;
+  
+  // Technical Specifications
+  work_envelope_mm?: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  max_spindle_speed_rpm?: number;
+  tool_changer_capacity?: number;
+  max_part_weight_kg?: number;
+  min_tolerance_mm?: number;
+  coolant_type?: string;
+  probes_installed?: boolean;
+  
+  // Capabilities (from junction tables)
+  operations?: string[];
+  fixture_types?: string[];
+  materials?: string[];
+  preferred_for?: string[];
+  
+  // Scheduling & Cost
+  setup_time_min?: number;
+  typical_cycle_time_multiplier?: number;
+  estimated_hourly_rate_usd?: number;
+  
+  // Maintenance & Performance
+  last_calibrated?: string;
+  runtime_metrics?: {
+    avg_uptime_pct?: number;
+    last_maintenance?: string;
+    operating_shifts?: string[];
+  };
+  
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // Form submission payload
 export interface QuoteRequestSubmission {
   companyName: string;
