@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { MessageSquare, Send } from 'lucide-react';
+import { MessageSquare, Send, Camera, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
+import html2canvas from 'html2canvas';
 
 interface FeedbackWidgetProps {
   open: boolean;
@@ -13,8 +14,42 @@ interface FeedbackWidgetProps {
 export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
   const [feedback, setFeedback] = useState('');
   const [email, setEmail] = useState('');
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const captureScreenshot = async () => {
+    setIsCapturing(true);
+    try {
+      // Temporarily hide the dialog to capture the page behind it
+      onOpenChange(false);
+      
+      // Wait a bit for the dialog to close
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Capture the screenshot
+      const canvas = await html2canvas(document.body, {
+        useCORS: true,
+        allowTaint: true,
+        scrollY: -window.scrollY,
+        scrollX: -window.scrollX,
+      });
+      
+      // Convert to base64
+      const screenshotData = canvas.toDataURL('image/png');
+      setScreenshot(screenshotData);
+      
+      // Reopen the dialog
+      onOpenChange(true);
+    } catch (error) {
+      console.error('Screenshot capture failed:', error);
+      alert('Failed to capture screenshot');
+      onOpenChange(true);
+    } finally {
+      setIsCapturing(false);
+    }
+  };
 
   const submitFeedback = async () => {
     console.log('submitFeedback called, feedback:', feedback);
@@ -36,6 +71,7 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
           userAgent: navigator.userAgent,
           timestamp: new Date().toISOString(),
           viewport: `${window.innerWidth}x${window.innerHeight}`,
+          screenshot: screenshot || undefined,
         },
       };
       
@@ -60,6 +96,7 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
           onOpenChange(false);
           setFeedback('');
           setEmail('');
+          setScreenshot(null);
           setSubmitted(false);
         }, 2000);
       } else {
@@ -125,6 +162,50 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
                 <p className="text-xs text-muted-foreground mt-1">
                   We'll only use this to follow up on your feedback
                 </p>
+              </div>
+
+              {/* Screenshot Section */}
+              <div className="pt-2 border-t">
+                {screenshot ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Screenshot attached</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setScreenshot(null)}
+                        disabled={isSubmitting}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <img 
+                      src={screenshot} 
+                      alt="Screenshot preview" 
+                      className="w-full rounded border"
+                    />
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={captureScreenshot}
+                    disabled={isSubmitting || isCapturing}
+                    className="w-full"
+                  >
+                    {isCapturing ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                        Capturing...
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="h-4 w-4 mr-2" />
+                        Attach Screenshot
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
 
               <div className="flex gap-2 pt-2">
