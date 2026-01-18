@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginModal } from '@/components/LoginModal';
+import { FeedbackWidget } from '@/components/FeedbackWidget';
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ export default function Layout({ children }: LayoutProps) {
   const [currentPath, setCurrentPath] = useState(window.location.hash.slice(1) || '/');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout, isAuthenticated } = useAuth();
   
@@ -43,6 +45,11 @@ export default function Layout({ children }: LayoutProps) {
     logout();
     setDropdownOpen(false);
     navigateTo('/');
+  };
+
+  const handleFeedbackClick = () => {
+    setDropdownOpen(false);
+    setFeedbackOpen(true);
   };
 
   // Close dropdown when clicking outside
@@ -129,6 +136,10 @@ export default function Layout({ children }: LayoutProps) {
                   <div className="px-2 py-1.5 text-sm font-medium border-b">
                     {user?.name}
                   </div>
+                  <DropdownMenuItem onClick={handleFeedbackClick}>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Send Feedback
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
@@ -147,6 +158,9 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Login Modal */}
       <LoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
+
+      {/* Feedback Widget */}
+      <FeedbackWidget open={feedbackOpen} onOpenChange={setFeedbackOpen} />
     </div>
   );
 }

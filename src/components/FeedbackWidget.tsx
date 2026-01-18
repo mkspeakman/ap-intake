@@ -7,8 +7,12 @@ import { Input } from './ui/input';
 
 const FEEDBACK_FISH_PROJECT_ID = import.meta.env.VITE_FEEDBACK_FISH_PROJECT_ID || '';
 
-export function FeedbackWidget() {
-  const [isOpen, setIsOpen] = useState(false);
+interface FeedbackWidgetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
   const [feedback, setFeedback] = useState('');
   const [email, setEmail] = useState('');
   const [screenshot, setScreenshot] = useState<string | null>(null);
@@ -59,7 +63,7 @@ export function FeedbackWidget() {
       if (response.ok) {
         setSubmitted(true);
         setTimeout(() => {
-          setIsOpen(false);
+          onOpenChange(false);
           setFeedback('');
           setEmail('');
           setScreenshot(null);
@@ -77,19 +81,7 @@ export function FeedbackWidget() {
   };
 
   return (
-    <>
-      {/* Floating Feedback Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
-        aria-label="Send Feedback"
-      >
-        <MessageSquare className="h-5 w-5" />
-        <span className="font-medium">Feedback</span>
-      </button>
-
-      {/* Feedback Dialog */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -169,7 +161,7 @@ export function FeedbackWidget() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => onOpenChange(false)}
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -183,6 +175,5 @@ export function FeedbackWidget() {
           )}
         </DialogContent>
       </Dialog>
-    </>
   );
 }

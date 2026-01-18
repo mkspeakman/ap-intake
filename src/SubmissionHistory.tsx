@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverTrigger, PopoverContent, PopoverOverlay } from '@/components/ui/popover';
-import { FeedbackWidget } from '@/components/FeedbackWidget';
 import { 
   Search, 
   Filter, 
@@ -513,9 +512,6 @@ export default function SubmissionHistory() {
           </Button>
         </div>
       </div>
-
-      {/* Feedback Widget */}
-      <FeedbackWidget />
     </div>
   );
 }
