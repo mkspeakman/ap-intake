@@ -24,10 +24,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { quote_id, materials, operations, quantity, certifications, dimensions, tolerances } = req.body;
+    const { quote_id, materials, operations, quantity, certifications, dimensions, tolerances, description } = req.body;
 
     if (!quote_id) {
       return res.status(400).json({ error: 'quote_id is required' });
+    }
+
+    // VALIDATION: Check for insufficient data before running analysis
+    const validationResult = validateRequest(req.body);
+    if (!validationResult.isValid) {
+      // Mark as insufficient data and return early
+      const insufficientDataAnalysis = {
+        feasibility_summary: validationResult.message,
+        total_operations_required: 0,
+        operations_matched: 0,
+        operations_outsourced: 0,
+        material_compatibility: false,
+        tolerance_achievable: false,
+        confidence_score: 0,
+        validation_errors: validationResult.errors,
+        analysis_timestamp: new Date().toISOString(),
+      };
+
+      await sql`
+        UPDATE quote_requests 
+        SET 
+          in_house_feasibility = 'none',
+          machine_matches = '[]'::jsonb,
+          outsourced_steps = '[]'::jsonb,
+          capability_analysis = ${JSON.stringify(insufficientDataAnalysis)},
+          review_status = 'insufficient_data',
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ${quote_id}
+      `;
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          quote_id,
+          feasibility: 'none',
+          machine_matches: [],
+          outsourced_steps: [],
+          analysis: insufficientDataAnalysis,
+          validation_failed: true,
+        },
+      });
     }
 
     // Fetch all available equipment with their capabilities
@@ -251,4 +292,48 @@ function generateFeasibilitySummary(
   } else {
     return `❌ Cannot be manufactured in-house. Recommend vendor network.`;
   }
+}
+
+/**
+ * Validate request has sufficient data for capability analysis
+ */
+function validateRequest(body: any): { isValid: boolean; message: string; errors: string[] } {
+  const errors: string[] = [];
+  
+  // Check for materials
+  if (!body.materials || body.materials.length === 0) {
+    errors.push('No materials specified');
+  }
+  
+  // Check for valid quantity
+  if (!body.quantity || body.quantity <= 0 || !Number.isFinite(body.quantity)) {
+    errors.push('Invalid or missing quantity');
+  }
+  
+  // Check for manufacturing-related content in description
+  const description = body.description || '';
+  const manufacturingKeywords = [
+    'machine', 'machining', 'cnc', 'mill', 'turn', 'lathe', 'drill',
+    'part', 'parts', 'component', 'fabricate', 'fabrication', 'manufacture',
+    'tolerance', 'surface', 'finish', 'material', 'aluminum', 'steel', 'titanium',
+    'bracket', 'shaft', 'housing', 'plate', 'fixture', 'assembly'
+  ];
+  
+  const hasManufacturingContext = manufacturingKeywords.some(keyword => 
+    description.toLowerCase().includes(keyword)
+  );
+  
+  if (!hasManufacturingContext && description.length < 20) {
+    errors.push('Description lacks manufacturing context or details');
+  }
+  
+  // Determine if request is valid
+  const isValid = errors.length === 0;
+  
+  let message = '';
+  if (!isValid) {
+    message = `⚠️ Insufficient data for capability analysis: ${errors.join(', ')}. Please provide complete manufacturing specifications.`;
+  }
+  
+  return { isValid, message, errors };
 }

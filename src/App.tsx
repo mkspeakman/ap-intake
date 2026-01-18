@@ -185,6 +185,7 @@ export default function ManufacturingIntakeForm() {
                 materials: form.materials,
                 quantity: form.quantity,
                 certifications: form.certifications,
+                description: form.description,
               }),
             });
             // Analysis runs async, don't block on it

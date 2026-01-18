@@ -284,7 +284,12 @@ export default function SubmissionHistory() {
                                     <Cpu className="h-4 w-4" />
                                     Manufacturing Capability Analysis
                                   </h4>
-                                  {submission.in_house_feasibility && (
+                                  {submission.review_status === 'insufficient_data' ? (
+                                    <Badge variant="outline" className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-950 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200">
+                                      <AlertCircle className="h-3 w-3" />
+                                      Insufficient Data
+                                    </Badge>
+                                  ) : submission.in_house_feasibility && (
                                     <Badge 
                                       variant={
                                         submission.in_house_feasibility === 'full' ? 'default' :
@@ -308,8 +313,29 @@ export default function SubmissionHistory() {
                                   {submission.capability_analysis.feasibility_summary}
                                 </p>
 
-                                {/* Machine Matches */}
-                                {submission.machine_matches && submission.machine_matches.length > 0 && (
+                                {/* Validation Errors - Show for insufficient data */}
+                                {submission.review_status === 'insufficient_data' && 
+                                 submission.capability_analysis.validation_errors && 
+                                 submission.capability_analysis.validation_errors.length > 0 && (
+                                  <div className="space-y-2 p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded">
+                                    <div className="text-xs font-medium text-yellow-800 dark:text-yellow-200 uppercase tracking-wider">
+                                      Missing Information
+                                    </div>
+                                    <ul className="text-sm space-y-1">
+                                      {submission.capability_analysis.validation_errors.map((error: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-2 text-yellow-800 dark:text-yellow-200">
+                                          <span className="text-yellow-600 dark:text-yellow-400 mt-0.5">•</span>
+                                          {error}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+
+                                {/* Machine Matches - Only show if NOT insufficient data */}
+                                {submission.review_status !== 'insufficient_data' && 
+                                 submission.machine_matches && 
+                                 submission.machine_matches.length > 0 && (
                                   <div className="space-y-2">
                                     <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                                       Matched Equipment ({submission.machine_matches.length})
@@ -366,33 +392,35 @@ export default function SubmissionHistory() {
                                   </div>
                                 )}
 
-                                {/* Quick Stats */}
-                                <div className="grid grid-cols-3 gap-4 pt-3 border-t">
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-foreground">
-                                      {submission.capability_analysis.operations_matched || 0}
-                                      <span className="text-sm text-muted-foreground">
-                                        /{submission.capability_analysis.total_operations_required || 0}
-                                      </span>
+                                {/* Quick Stats - Only show if NOT insufficient data */}
+                                {submission.review_status !== 'insufficient_data' && (
+                                  <div className="grid grid-cols-3 gap-4 pt-3 border-t">
+                                    <div className="text-center">
+                                      <div className="text-2xl font-bold text-foreground">
+                                        {submission.capability_analysis.operations_matched || 0}
+                                        <span className="text-sm text-muted-foreground">
+                                          /{submission.capability_analysis.total_operations_required || 0}
+                                        </span>
+                                      </div>
+                                      <div className="text-xs text-muted-foreground">Operations Matched</div>
                                     </div>
-                                    <div className="text-xs text-muted-foreground">Operations Matched</div>
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-foreground">
-                                      {submission.capability_analysis.confidence_score || 0}%
+                                    <div className="text-center">
+                                      <div className="text-2xl font-bold text-foreground">
+                                        {submission.capability_analysis.confidence_score || 0}%
+                                      </div>
+                                      <div className="text-xs text-muted-foreground">Confidence Score</div>
                                     </div>
-                                    <div className="text-xs text-muted-foreground">Confidence Score</div>
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-2xl font-bold text-foreground">
-                                      {submission.capability_analysis.estimated_setup_time_min || '—'}
-                                      {submission.capability_analysis.estimated_setup_time_min && (
-                                        <span className="text-sm text-muted-foreground">min</span>
-                                      )}
+                                    <div className="text-center">
+                                      <div className="text-2xl font-bold text-foreground">
+                                        {submission.capability_analysis.estimated_setup_time_min || '—'}
+                                        {submission.capability_analysis.estimated_setup_time_min && (
+                                          <span className="text-sm text-muted-foreground">min</span>
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-muted-foreground">Est. Setup Time</div>
                                     </div>
-                                    <div className="text-xs text-muted-foreground">Est. Setup Time</div>
                                   </div>
-                                </div>
+                                )}
                               </div>
                             )}
 
