@@ -37,18 +37,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('Submitting feedback to project:', FEEDBACK_FISH_PROJECT_ID);
 
-    // Submit to Feedback Fish API
-    const response = await fetch('https://feedback.fish/api/v1/feedback', {
+    // Submit to Feedback Fish API - using correct endpoint
+    const feedbackData = {
+      projectId: FEEDBACK_FISH_PROJECT_ID,
+      text: message,
+      category: 'other',
+      userId: email || undefined,
+      metadata: metadata || {},
+    };
+
+    console.log('Feedback data:', JSON.stringify(feedbackData));
+
+    const response = await fetch(`https://api.feedback.fish/feedback`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        projectId: FEEDBACK_FISH_PROJECT_ID,
-        message,
-        email: email || undefined,
-        metadata: metadata || {},
-      }),
+      body: JSON.stringify(feedbackData),
     });
 
     if (!response.ok) {
