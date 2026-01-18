@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageSquare, Send, Camera } from 'lucide-react';
+import { MessageSquare, Send } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Textarea } from './ui/textarea';
@@ -13,26 +13,8 @@ interface FeedbackWidgetProps {
 export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
   const [feedback, setFeedback] = useState('');
   const [email, setEmail] = useState('');
-  const [screenshot, setScreenshot] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const captureScreenshot = async () => {
-    try {
-      // Use the browser's native screenshot API if available
-      // Otherwise, we'll just let users describe the issue
-      const canvas = document.createElement('canvas');
-      
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      
-      // For now, just show a message that screenshot is captured
-      // In production, you'd use html2canvas or a similar library
-      setScreenshot('screenshot-placeholder');
-    } catch (error) {
-      console.error('Screenshot capture failed:', error);
-    }
-  };
 
   const submitFeedback = async () => {
     console.log('submitFeedback called, feedback:', feedback);
@@ -78,7 +60,6 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
           onOpenChange(false);
           setFeedback('');
           setEmail('');
-          setScreenshot(null);
           setSubmitted(false);
         }, 2000);
       } else {
