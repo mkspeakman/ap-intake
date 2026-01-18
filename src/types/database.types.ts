@@ -23,7 +23,7 @@ export interface QuoteRequest {
   machine_matches?: MachineMatch[];
   outsourced_steps?: string[];
   capability_analysis?: CapabilityAnalysis;
-  review_status?: 'pending_review' | 'auto_matched' | 'approved' | 'manual_override';
+  review_status?: 'pending_review' | 'auto_matched' | 'approved' | 'manual_override' | 'insufficient_data';
   
   // Relations (IDs or names depending on query)
   materials?: string[];
@@ -57,6 +57,7 @@ export interface CapabilityAnalysis {
   recommended_sequence?: string[];
   confidence_score?: number;
   analysis_timestamp: string;
+  validation_errors?: string[];
 }
 
 export interface QuoteFile {
