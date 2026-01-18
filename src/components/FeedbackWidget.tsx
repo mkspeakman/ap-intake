@@ -67,7 +67,7 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
     try {
       const payload = {
         message: feedback,
-        email: email || undefined,
+        email: email?.trim() || '',
         metadata: {
           url: window.location.href,
           userAgent: navigator.userAgent,

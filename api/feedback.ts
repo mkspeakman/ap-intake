@@ -42,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       projectId: FEEDBACK_FISH_PROJECT_ID,
       text: message,
       category: 'other',
-      userId: email || 'anonymous',
+      userId: (email && email.trim()) || 'anonymous',
       metadata: metadata || {},
     };
 
