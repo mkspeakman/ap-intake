@@ -5,7 +5,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FEEDBACK_FISH_PROJECT_ID = process.env.VITE_FEEDBACK_FISH_PROJECT_ID || '';
+const FEEDBACK_FISH_PROJECT_ID = process.env.VITE_FEEDBACK_FISH_PROJECT_ID || process.env.FEEDBACK_FISH_PROJECT_ID || '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,6 +27,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
+    if (!FEEDBACK_FISH_PROJECT_ID) {
+      console.error('FEEDBACK_FISH_PROJECT_ID is not set');
+      return res.status(500).json({ 
+        error: 'Feedback service not configured',
+        details: 'Project ID is missing'
+      });
+    }
+
+    console.log('Submitting feedback to project:', FEEDBACK_FISH_PROJECT_ID);
+
     // Submit to Feedback Fish API
     const response = await fetch('https://feedback.fish/api/v1/feedback', {
       method: 'POST',
@@ -43,8 +53,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Feedback Fish API error:', errorText);
-      throw new Error('Failed to submit feedback to Feedback Fish');
+      console.error('Feedback Fish API error:', response.status, errorText);
+      throw new Error(`Failed to submit feedback to Feedback Fish: ${response.status} ${errorText}`);
     }
 
     return res.status(200).json({
