@@ -146,18 +146,6 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
                 </p>
               </div>
 
-              {/* Screenshot option */}
-              <div className="pt-2 border-t">
-                <button
-                  onClick={captureScreenshot}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  disabled={isSubmitting}
-                >
-                  <Camera className="h-4 w-4" />
-                  {screenshot ? '✓ Screenshot captured' : 'Capture screenshot (optional)'}
-                </button>
-              </div>
-
               <div className="flex gap-2 pt-2">
                 <Button
                   onClick={submitFeedback}

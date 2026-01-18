@@ -42,13 +42,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       projectId: FEEDBACK_FISH_PROJECT_ID,
       text: message,
       category: 'other',
+      userId: email || 'anonymous',
       metadata: metadata || {},
     };
-
-    // Only include userId if email is provided
-    if (email) {
-      feedbackData.userId = email;
-    }
 
     console.log('Feedback data:', JSON.stringify(feedbackData));
 
