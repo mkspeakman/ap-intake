@@ -35,29 +35,44 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
   };
 
   const submitFeedback = async () => {
-    if (!feedback.trim()) return;
+    console.log('submitFeedback called, feedback:', feedback);
+    
+    if (!feedback.trim()) {
+      console.log('Feedback is empty, returning');
+      return;
+    }
 
     setIsSubmitting(true);
+    console.log('Starting feedback submission...');
 
     try {
+      const payload = {
+        message: feedback,
+        email: email || undefined,
+        metadata: {
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString(),
+          viewport: `${window.innerWidth}x${window.innerHeight}`,
+        },
+      };
+      
+      console.log('Sending payload:', payload);
+      
       const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: feedback,
-          email: email || undefined,
-          metadata: {
-            url: window.location.href,
-            userAgent: navigator.userAgent,
-            timestamp: new Date().toISOString(),
-            viewport: `${window.innerWidth}x${window.innerHeight}`,
-          },
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log('Response status:', response.status);
+      const responseData = await response.json();
+      console.log('Response data:', responseData);
+
       if (response.ok) {
+        console.log('Feedback submitted successfully!');
         setSubmitted(true);
         setTimeout(() => {
           onOpenChange(false);
@@ -67,12 +82,14 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
           setSubmitted(false);
         }, 2000);
       } else {
+        console.error('Response not OK:', responseData);
         throw new Error('Failed to submit feedback');
       }
     } catch (error) {
       console.error('Error submitting feedback:', error);
       alert('Failed to submit feedback. Please try again.');
     } finally {
+      console.log('Setting isSubmitting to false');
       setIsSubmitting(false);
     }
   };
