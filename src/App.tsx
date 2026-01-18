@@ -174,6 +174,23 @@ export default function ManufacturingIntakeForm() {
         if (dbResponse.ok) {
           const dbData = await dbResponse.json();
           dbQuoteId = dbData.data.id;
+          
+          // STEP 1.5: Run equipment capability analysis
+          try {
+            await fetch('/api/analyze-capability', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                quote_id: dbQuoteId,
+                materials: form.materials,
+                quantity: form.quantity,
+                certifications: form.certifications,
+              }),
+            });
+            // Analysis runs async, don't block on it
+          } catch (analysisError) {
+            console.log('Capability analysis failed, continuing...', analysisError);
+          }
         }
       } catch (dbError) {
         // Database save failed but continue with webhook

@@ -20,6 +20,13 @@ CREATE TABLE quote_requests (
     lead_time VARCHAR(50),
     part_notes TEXT,
     
+    -- Equipment Capability Analysis
+    in_house_feasibility VARCHAR(20), -- 'full', 'partial', 'none'
+    machine_matches TEXT, -- JSON array of matched machine IDs with scores
+    outsourced_steps TEXT, -- JSON array of operations requiring outsourcing
+    capability_analysis TEXT, -- JSON with detailed reasoning and match scores
+    review_status VARCHAR(50) DEFAULT 'pending_review', -- 'pending_review', 'auto_matched', 'approved', 'manual_override'
+    
     -- Google Drive Integration
     drive_file_id VARCHAR(255),
     drive_link TEXT,

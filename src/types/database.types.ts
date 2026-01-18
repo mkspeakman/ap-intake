@@ -18,6 +18,13 @@ export interface QuoteRequest {
   lead_time?: string;
   part_notes?: string;
   
+  // Equipment Capability Analysis
+  in_house_feasibility?: 'full' | 'partial' | 'none';
+  machine_matches?: MachineMatch[];
+  outsourced_steps?: string[];
+  capability_analysis?: CapabilityAnalysis;
+  review_status?: 'pending_review' | 'auto_matched' | 'approved' | 'manual_override';
+  
   // Relations (IDs or names depending on query)
   materials?: string[];
   finishes?: string[];
@@ -28,6 +35,28 @@ export interface QuoteRequest {
   created_at?: string;
   updated_at?: string;
   submitted_by?: string;
+}
+
+export interface MachineMatch {
+  machine_id: string;
+  name: string;
+  match_score: number;
+  matched_operations: string[];
+  matched_materials: string[];
+  notes?: string;
+}
+
+export interface CapabilityAnalysis {
+  feasibility_summary: string;
+  total_operations_required: number;
+  operations_matched: number;
+  operations_outsourced: number;
+  material_compatibility: boolean;
+  tolerance_achievable: boolean;
+  estimated_setup_time_min?: number;
+  recommended_sequence?: string[];
+  confidence_score?: number;
+  analysis_timestamp: string;
 }
 
 export interface QuoteFile {
