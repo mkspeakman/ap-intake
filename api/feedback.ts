@@ -38,13 +38,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('Submitting feedback to project:', FEEDBACK_FISH_PROJECT_ID);
 
     // Submit to Feedback Fish API - using correct endpoint
-    const feedbackData = {
+    const feedbackData: any = {
       projectId: FEEDBACK_FISH_PROJECT_ID,
       text: message,
       category: 'other',
-      userId: email || undefined,
       metadata: metadata || {},
     };
+
+    // Only include userId if email is provided
+    if (email) {
+      feedbackData.userId = email;
+    }
 
     console.log('Feedback data:', JSON.stringify(feedbackData));
 
