@@ -10,8 +10,14 @@ import {
   ExternalLink, 
   Building2,
   ChevronDown,
-  FileText
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  Cpu,
+  TrendingUp
 } from 'lucide-react';
+import type { MachineMatch, CapabilityAnalysis } from '@/types/database.types';
 
 interface Submission {
   id: number;
@@ -30,6 +36,11 @@ interface Submission {
   phone: string | null;
   lead_time: string | null;
   part_notes: string | null;
+  in_house_feasibility?: 'full' | 'partial' | 'none';
+  machine_matches?: MachineMatch[];
+  outsourced_steps?: string[];
+  capability_analysis?: CapabilityAnalysis;
+  review_status?: string;
 }
 
 export default function SubmissionHistory() {
@@ -264,7 +275,127 @@ export default function SubmissionHistory() {
                     {selectedSubmission === submission.id && (
                       <TableRow>
                         <TableCell colSpan={8} className="bg-muted/30">
-                          <div className="py-4 space-y-4">
+                          <div className="py-4 space-y-6">
+                            {/* Equipment Capability Analysis */}
+                            {submission.capability_analysis && (
+                              <div className="space-y-3 p-4 bg-card rounded-lg border">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-sm font-semibold flex items-center gap-2">
+                                    <Cpu className="h-4 w-4" />
+                                    Manufacturing Capability Analysis
+                                  </h4>
+                                  {submission.in_house_feasibility && (
+                                    <Badge 
+                                      variant={
+                                        submission.in_house_feasibility === 'full' ? 'default' :
+                                        submission.in_house_feasibility === 'partial' ? 'secondary' : 
+                                        'destructive'
+                                      }
+                                      className="flex items-center gap-1"
+                                    >
+                                      {submission.in_house_feasibility === 'full' && <CheckCircle2 className="h-3 w-3" />}
+                                      {submission.in_house_feasibility === 'partial' && <AlertCircle className="h-3 w-3" />}
+                                      {submission.in_house_feasibility === 'none' && <XCircle className="h-3 w-3" />}
+                                      {submission.in_house_feasibility === 'full' ? 'Fully In-House' :
+                                       submission.in_house_feasibility === 'partial' ? 'Partial In-House' :
+                                       'Outsource Required'}
+                                    </Badge>
+                                  )}
+                                </div>
+
+                                {/* Summary */}
+                                <p className="text-sm text-muted-foreground">
+                                  {submission.capability_analysis.feasibility_summary}
+                                </p>
+
+                                {/* Machine Matches */}
+                                {submission.machine_matches && submission.machine_matches.length > 0 && (
+                                  <div className="space-y-2">
+                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                      Matched Equipment ({submission.machine_matches.length})
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                      {submission.machine_matches.slice(0, 4).map((match, i) => (
+                                        <div 
+                                          key={i}
+                                          className="flex items-start justify-between p-3 bg-muted/50 rounded border border-border/50 hover:border-border transition-colors"
+                                        >
+                                          <div className="flex-1 min-w-0">
+                                            <div className="font-medium text-sm truncate">
+                                              {match.name}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground mt-0.5">
+                                              {match.matched_operations.join(', ')}
+                                            </div>
+                                            {match.notes && (
+                                              <div className="text-xs text-muted-foreground mt-1">
+                                                {match.notes}
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div className="flex flex-col items-end ml-3 flex-shrink-0">
+                                            <div className="flex items-center gap-1">
+                                              <TrendingUp className="h-3 w-3 text-green-600" />
+                                              <span className="text-xs font-semibold text-green-600">
+                                                {Math.round(match.match_score)}%
+                                              </span>
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                              confidence
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Outsourced Steps */}
+                                {submission.outsourced_steps && submission.outsourced_steps.length > 0 && (
+                                  <div className="space-y-2">
+                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                      Requires Outsourcing
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                      {submission.outsourced_steps.map((step, i) => (
+                                        <Badge key={i} variant="outline" className="bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800">
+                                          {step}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Quick Stats */}
+                                <div className="grid grid-cols-3 gap-4 pt-3 border-t">
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-foreground">
+                                      {submission.capability_analysis.operations_matched || 0}
+                                      <span className="text-sm text-muted-foreground">
+                                        /{submission.capability_analysis.total_operations_required || 0}
+                                      </span>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">Operations Matched</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-foreground">
+                                      {submission.capability_analysis.confidence_score || 0}%
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">Confidence Score</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-2xl font-bold text-foreground">
+                                      {submission.capability_analysis.estimated_setup_time_min || '—'}
+                                      {submission.capability_analysis.estimated_setup_time_min && (
+                                        <span className="text-sm text-muted-foreground">min</span>
+                                      )}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">Est. Setup Time</div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               {/* Contact Info */}
                               <div className="space-y-2">
