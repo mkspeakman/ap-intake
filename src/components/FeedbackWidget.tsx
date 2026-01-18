@@ -28,16 +28,18 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
       // Wait a bit for the dialog to close
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Capture the screenshot
+      // Capture the screenshot with lower quality to reduce size
       const canvas = await html2canvas(document.body, {
         useCORS: true,
         allowTaint: true,
         scrollY: -window.scrollY,
         scrollX: -window.scrollX,
+        scale: 0.5, // Reduce resolution by half
+        logging: false,
       });
       
-      // Convert to base64
-      const screenshotData = canvas.toDataURL('image/png');
+      // Convert to base64 with compression (JPEG is smaller than PNG)
+      const screenshotData = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
       setScreenshot(screenshotData);
       
       // Reopen the dialog
