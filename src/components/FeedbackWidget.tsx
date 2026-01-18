@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { MessageSquare, Send, Camera } from 'lucide-react';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
-
-const FEEDBACK_FISH_PROJECT_ID = import.meta.env.VITE_FEEDBACK_FISH_PROJECT_ID || '';
 
 interface FeedbackWidgetProps {
   open: boolean;
@@ -42,13 +40,12 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://feedback.fish/api/feedback', {
+      const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          projectId: FEEDBACK_FISH_PROJECT_ID,
           message: feedback,
           email: email || undefined,
           metadata: {
@@ -88,6 +85,9 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
               <MessageSquare className="h-5 w-5" />
               Send Feedback
             </DialogTitle>
+            <DialogDescription>
+              Share your thoughts, report bugs, or suggest improvements to help us make this app better.
+            </DialogDescription>
           </DialogHeader>
 
           {submitted ? (
