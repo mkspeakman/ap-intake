@@ -6,6 +6,7 @@ import { ProjectInformationSection } from '@/components/form-sections/ProjectInf
 import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRequirementsSection';
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
 import { SubmissionDialog } from '@/components/SubmissionDialog';
+import { FeedbackWidget } from '@/components/FeedbackWidget';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
 
 // Use proxy path for local development to avoid CORS issues
@@ -440,6 +441,9 @@ export default function ManufacturingIntakeForm() {
         error={dialogState.error}
         onClose={handleCloseDialog}
       />
+
+      {/* Feedback Widget */}
+      <FeedbackWidget />
       </div>
     </div>
   );
