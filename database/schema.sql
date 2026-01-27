@@ -115,6 +115,18 @@ CREATE TABLE quote_files (
     INDEX idx_quote_files (quote_request_id)
 );
 
+-- User Feedback table
+CREATE TABLE feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message TEXT NOT NULL,
+    user_email VARCHAR(255),
+    screenshot_base64 TEXT,
+    metadata TEXT, -- JSON: url, userAgent, timestamp, viewport
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_feedback_created (created_at)
+);
+
 -- Equipment/Machines table
 CREATE TABLE equipment (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

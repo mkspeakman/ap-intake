@@ -42,6 +42,18 @@ CREATE INDEX IF NOT EXISTS idx_status ON quote_requests(status);
 CREATE INDEX IF NOT EXISTS idx_created ON quote_requests(created_at);
 CREATE INDEX IF NOT EXISTS idx_quote_number ON quote_requests(quote_number);
 
+-- User Feedback table
+CREATE TABLE IF NOT EXISTS feedback (
+    id SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    user_email VARCHAR(255),
+    screenshot_base64 TEXT,
+    metadata JSONB, -- url, userAgent, timestamp, viewport
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedback_created ON feedback(created_at);
+
 -- Materials table
 CREATE TABLE IF NOT EXISTS materials (
     id SERIAL PRIMARY KEY,

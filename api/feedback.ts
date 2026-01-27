@@ -1,11 +1,13 @@
 /**
- * Vercel Serverless Function: Submit Feedback to Feedback Fish
+ * Vercel Serverless Function: Submit User Feedback
  * POST /api/feedback
+ * Stores feedback in database and sends email notification via n8n
  */
 
+import { sql } from '@vercel/postgres';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FEEDBACK_FISH_PROJECT_ID = process.env.VITE_FEEDBACK_FISH_PROJECT_ID || process.env.FEEDBACK_FISH_PROJECT_ID || '';
+const N8N_FEEDBACK_WEBHOOK_URL = process.env.N8N_FEEDBACK_WEBHOOK_URL || '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,44 +29,69 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (!FEEDBACK_FISH_PROJECT_ID) {
-      console.error('FEEDBACK_FISH_PROJECT_ID is not set');
-      return res.status(500).json({ 
-        error: 'Feedback service not configured',
-        details: 'Project ID is missing'
-      });
-    }
+    // Extract screenshot from metadata if present
+    const screenshot = metadata?.screenshot || null;
+    const metadataWithoutScreenshot = { ...metadata };
+    delete metadataWithoutScreenshot.screenshot;
 
-    console.log('Submitting feedback to project:', FEEDBACK_FISH_PROJECT_ID);
+    // Store feedback in database
+    const result = await sql`
+      INSERT INTO feedback (
+        message,
+        user_email,
+        screenshot_base64,
+        metadata
+      ) VALUES (
+        ${message},
+        ${email || null},
+        ${screenshot},
+        ${JSON.stringify(metadataWithoutScreenshot)}
+      )
+      RETURNING id, created_at
+    `;
 
-    // Submit to Feedback Fish API - using correct endpoint
-    const feedbackData: any = {
-      projectId: FEEDBACK_FISH_PROJECT_ID,
-      text: message,
-      category: 'other',
-      userId: (email && email.trim()) || 'anonymous',
-      metadata: metadata || {},
-    };
+    const feedbackId = result.rows[0].id;
+    const createdAt = result.rows[0].created_at;
 
-    console.log('Feedback data:', JSON.stringify(feedbackData));
+    console.log(`Feedback ${feedbackId} stored in database`);
 
-    const response = await fetch(`https://api.feedback.fish/feedback`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(feedbackData),
-    });
+    // Send to n8n webhook for email notification (non-blocking)
+    if (N8N_FEEDBACK_WEBHOOK_URL) {
+      try {
+        const n8nPayload = {
+          feedbackId,
+          message,
+          userEmail: email || 'anonymous',
+          screenshot,
+          metadata: metadataWithoutScreenshot,
+          createdAt,
+        };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Feedback Fish API error:', response.status, errorText);
-      throw new Error(`Failed to submit feedback to Feedback Fish: ${response.status} ${errorText}`);
+        const n8nResponse = await fetch(N8N_FEEDBACK_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(n8nPayload),
+        });
+
+        if (!n8nResponse.ok) {
+          console.error('n8n webhook error:', n8nResponse.status, await n8nResponse.text());
+        } else {
+          console.log(`Feedback ${feedbackId} sent to n8n webhook`);
+        }
+      } catch (n8nError) {
+        // Don't fail the request if n8n is down - feedback is already saved
+        console.error('Failed to send to n8n webhook:', n8nError);
+      }
+    } else {
+      console.warn('N8N_FEEDBACK_WEBHOOK_URL not configured - skipping email notification');
     }
 
     return res.status(200).json({
       success: true,
       message: 'Feedback submitted successfully',
+      feedbackId,
     });
   } catch (error: any) {
     console.error('Error submitting feedback:', error);
