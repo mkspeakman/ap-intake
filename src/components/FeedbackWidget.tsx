@@ -54,15 +54,11 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
   };
 
   const submitFeedback = async () => {
-    console.log('submitFeedback called, feedback:', feedback);
-    
     if (!feedback.trim()) {
-      console.log('Feedback is empty, returning');
       return;
     }
 
     setIsSubmitting(true);
-    console.log('Starting feedback submission...');
 
     try {
       const payload = {
@@ -77,8 +73,6 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
         },
       };
       
-      console.log('Sending payload:', payload);
-      
       const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: {
@@ -87,12 +81,9 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
         body: JSON.stringify(payload),
       });
 
-      console.log('Response status:', response.status);
       const responseData = await response.json();
-      console.log('Response data:', responseData);
 
       if (response.ok) {
-        console.log('Feedback submitted successfully!');
         setSubmitted(true);
         setTimeout(() => {
           onOpenChange(false);
@@ -109,7 +100,6 @@ export function FeedbackWidget({ open, onOpenChange }: FeedbackWidgetProps) {
       console.error('Error submitting feedback:', error);
       alert('Failed to submit feedback. Please try again.');
     } finally {
-      console.log('Setting isSubmitting to false');
       setIsSubmitting(false);
     }
   };

@@ -12,13 +12,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api/webhook': {
-        target: 'https://speakhost.app.n8n.cloud',
+      '/api': {
+        target: 'http://localhost:3000',
         changeOrigin: true,
-        rewrite: () => '/webhook/project-submission',
       },
-      // API routes disabled for local dev - no database connection
-      // Use 'vercel dev' instead of 'npm run dev' to enable API routes
     },
   },
 })

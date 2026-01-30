@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CompanyContactSection } from '@/components/form-sections/CompanyContactSection';
@@ -6,6 +6,7 @@ import { ProjectInformationSection } from '@/components/form-sections/ProjectInf
 import { ProjectRequirementsSection } from '@/components/form-sections/ProjectRequirementsSection';
 import { QuantityTimelineSection } from '@/components/form-sections/QuantityTimelineSection';
 import { SubmissionDialog } from '@/components/SubmissionDialog';
+import { useAuth } from '@/contexts/AuthContext';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
 
 // Use proxy path for local development to avoid CORS issues
@@ -15,6 +16,8 @@ const WEBHOOK_URL = import.meta.env.DEV
   : '/api/webhook';
 
 export default function ManufacturingIntakeForm() {
+  const { user, isAuthenticated } = useAuth();
+  
   const [form, setForm] = useState({
     companyName: '',
     contactName: '',
@@ -32,6 +35,19 @@ export default function ManufacturingIntakeForm() {
     certifications: [] as string[],
     files: [] as File[],
   });
+
+  // Pre-populate form with user data when logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setForm(prev => ({
+        ...prev,
+        companyName: user.company_name || prev.companyName,
+        contactName: user.name || prev.contactName,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const [fileUploadData, setFileUploadData] = useState<FileUploadItemData[]>([]);
 

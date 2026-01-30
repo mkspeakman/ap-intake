@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverTrigger, PopoverContent, PopoverOverlay } from '@/components/ui/popover';
 import { 
@@ -92,6 +93,7 @@ export default function SubmissionHistory() {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZoneName: 'short',
     }).format(date);
   };
 
@@ -144,11 +146,16 @@ export default function SubmissionHistory() {
                     
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">Status</label>
-                      <select className="w-full h-8 px-3 rounded-md border border-input bg-background text-sm">
-                        <option value="">All</option>
-                        <option value="pending">Pending Files</option>
-                        <option value="complete">Complete</option>
-                      </select>
+                      <Select>
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="All" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All</SelectItem>
+                          <SelectItem value="pending">Pending Files</SelectItem>
+                          <SelectItem value="complete">Complete</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   

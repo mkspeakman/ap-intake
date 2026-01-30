@@ -38,6 +38,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             id: 1,
             email: 'test@example.com',
             name: 'Test User',
+            role: 'admin',
+            can_view_history: true,
             permissions: {
               canViewHistory: true
             }
@@ -49,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Query user from database
     const result = await sql`
-      SELECT id, email, name, password_hash, can_view_history
+      SELECT id, email, name, company_name, phone, password_hash, can_view_history, role
       FROM users
       WHERE email = ${email}
       LIMIT 1
@@ -74,6 +76,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         id: user.id,
         email: user.email,
         name: user.name,
+        company_name: user.company_name,
+        phone: user.phone,
+        role: user.role || 'guest',
+        can_view_history: user.can_view_history || false,
         permissions: {
           canViewHistory: user.can_view_history || false
         }

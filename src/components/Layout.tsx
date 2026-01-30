@@ -17,7 +17,7 @@ export default function Layout({ children }: LayoutProps) {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, hasPermission } = useAuth();
   
   // Listen for hash changes
   useEffect(() => {
@@ -102,7 +102,7 @@ export default function Layout({ children }: LayoutProps) {
                   New Request
                 </Button>
                 
-                {user?.permissions.canViewHistory && (
+                {hasPermission('canViewHistory') && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -115,6 +115,22 @@ export default function Layout({ children }: LayoutProps) {
                     }`}
                   >
                     History
+                  </Button>
+                )}
+                
+                {(user?.role === 'admin' || user?.role === 'superadmin') && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigateTo('/users')}
+                    disabled={currentPath === '/users'}
+                    className={`h-8 ${
+                      currentPath === '/users' 
+                        ? 'text-white bg-white/10 cursor-default' 
+                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    Users
                   </Button>
                 )}
               </>
@@ -133,8 +149,9 @@ export default function Layout({ children }: LayoutProps) {
 
               {isAuthenticated && (
                 <DropdownMenu open={dropdownOpen}>
-                  <div className="px-2 py-1.5 text-sm font-medium border-b">
-                    {user?.name}
+                  <div className="px-2 py-1.5 border-b">
+                    <div className="text-sm font-medium">{user?.name}</div>
+                    <div className="text-xs text-gray-500 capitalize">{user?.role}</div>
                   </div>
                   <DropdownMenuItem onClick={handleFeedbackClick}>
                     <MessageSquare className="mr-2 h-4 w-4" />

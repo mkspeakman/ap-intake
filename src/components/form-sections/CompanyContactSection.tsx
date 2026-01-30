@@ -35,7 +35,7 @@ export function CompanyContactSection({
   };
 
   return (
-    <div className={`border-y rounded-lg py-4 transition-colors ${
+    <div className={`border-y rounded-lg py-4 px-1 transition-colors ${
       !isExpanded ? 'hover:bg-accent' : ''
     }`}>
       <div 
