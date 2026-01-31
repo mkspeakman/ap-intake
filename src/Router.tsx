@@ -26,8 +26,16 @@ function Router() {
       setPath(window.location.pathname);
     };
     
+    const handleNavigate = () => {
+      setPath(window.location.pathname);
+    };
+    
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('navigate', handleNavigate);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('navigate', handleNavigate);
+    };
   }, []);
 
   // Redirect to home if trying to access protected routes without permission

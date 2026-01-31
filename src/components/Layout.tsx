@@ -32,6 +32,8 @@ export default function Layout({ children }: LayoutProps) {
   const navigateTo = (path: string) => {
     window.history.pushState({}, '', path);
     setCurrentPath(path);
+    // Dispatch custom event to notify Router
+    window.dispatchEvent(new Event('navigate'));
   };
 
   const handleUserClick = () => {
