@@ -23,10 +23,12 @@ function Router() {
   // Listen for browser history changes
   useEffect(() => {
     const handlePopState = () => {
+      console.log('[Router] popstate event, pathname:', window.location.pathname);
       setPath(window.location.pathname);
     };
     
     const handleNavigate = () => {
+      console.log('[Router] navigate event, pathname:', window.location.pathname);
       setPath(window.location.pathname);
     };
     
@@ -51,6 +53,7 @@ function Router() {
   }, [path, user, hasPermission]);
 
   const renderPage = () => {
+    console.log('[Router] rendering page for path:', path);
     if (path === '/history') return <SubmissionHistory />;
     if (path === '/users') return <UserManagement />;
     return <ManufacturingIntakeForm />;

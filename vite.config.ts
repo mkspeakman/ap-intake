@@ -10,6 +10,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  appType: 'spa', // Enable SPA mode for proper routing
   server: {
     proxy: {
       '/api': {

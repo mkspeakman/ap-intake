@@ -345,14 +345,39 @@ vercel dev           # Start Vercel serverless (port 3000)
 vercel logs          # View production logs
 ```
 
+## ✅ Testing
+
+**Before every commit affecting functionality**, complete the testing checklist:
+
+```bash
+# 1. Build
+npm run build
+
+# 2. Preview and test
+npm run preview
+# Open http://localhost:4173
+
+# 3. Test navigation
+# - Click through all routes
+# - Verify views update
+# - Test browser back/forward
+# - Refresh on each route
+
+# 4. Commit only if all tests pass
+```
+
+See [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for comprehensive testing procedures.
+
 ## 📚 Additional Documentation
 
-- `TYPOGRAPHY_SYSTEM.md` - Typography tokens and font swapping
-- `DESIGN_SYSTEM_FINAL.md` - Design system implementation
-- `DATABASE_SETUP.md` - Database schema details
-- `VERCEL_SETUP.md` - Vercel deployment guide
-- `DEPLOYMENT_READY.md` - Deployment readiness checklist
-- `ACCESSIBILITY_ANALYSIS.md` - Accessibility compliance
+- **[TESTING_CHECKLIST.md](TESTING_CHECKLIST.md)** - Pre-commit testing procedures (MANDATORY)
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete system architecture
+- **[DATABASE_MIGRATIONS.md](DATABASE_MIGRATIONS.md)** - Database schema and migrations
+- **[LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)** - Local development setup
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide
+- **[RBAC_GUIDE.md](RBAC_GUIDE.md)** - Role-based access control details
+- **[DESIGN_SYSTEM_FINAL.md](DESIGN_SYSTEM_FINAL.md)** - UI design system
+- **[TYPOGRAPHY_SYSTEM.md](TYPOGRAPHY_SYSTEM.md)** - Typography tokens
 
 ## 🔒 Security Notes
 
