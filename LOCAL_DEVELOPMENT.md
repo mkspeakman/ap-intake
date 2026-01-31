@@ -39,6 +39,26 @@ npm run dev
 
 Access the application at: http://localhost:5173
 
+## Application Architecture
+
+### Routing System
+
+**Browser History Mode** - The app uses clean URLs without hash fragments:
+- ✅ `/` - Home (quote request form)
+- ✅ `/history` - Submission history (authenticated users only)
+- ✅ `/users` - User management (admin/superadmin only)
+
+**How it works:**
+1. Client-side routing via React Router (custom implementation)
+2. Vite dev server automatically handles SPA routing
+3. Vercel production uses rewrite rules in `vercel.json`
+4. Legacy hash URLs (`#/path`) auto-migrate to clean URLs
+
+**Protected Routes:**
+- Routes check authentication and permissions before rendering
+- Unauthorized users redirect to home (`/`)
+- RBAC middleware validates on both client and server
+
 ## Detailed Setup
 
 ### 1. Install Dependencies

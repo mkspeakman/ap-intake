@@ -10,6 +10,16 @@ function Router() {
   const [path, setPath] = useState(window.location.pathname);
   const { user, hasPermission } = useAuth();
 
+  // Migrate old hash URLs to history mode on initial load
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#/')) {
+      const newPath = hash.slice(1); // Remove the #
+      window.history.replaceState({}, '', newPath);
+      setPath(newPath);
+    }
+  }, []);
+
   // Listen for browser history changes
   useEffect(() => {
     const handlePopState = () => {

@@ -23,14 +23,36 @@ A modern web application for collecting and managing manufacturing quote request
 - 📁 File upload with progress tracking
 - 🤖 AI-powered equipment capability analysis
 - 🚀 Built with Vite, React 19, TypeScript
+- 🧭 Browser history routing with SPA fallback
+
+## 🏗️ Architecture
+
+### Routing
+- **Browser History Mode** - Clean URLs (`/history`, `/users`) with SPA fallback
+- **Automatic Hash Migration** - Legacy `#/path` URLs automatically redirect to `/path`
+- **Vercel Rewrites** - All non-API routes serve `index.html` for client-side routing
+- **Protected Routes** - Role-based access control on `/history` and `/users`
+
+### Authentication Flow
+1. User logs in via `/api/auth/login`
+2. Base64-encoded email token stored in localStorage
+3. Token sent with API requests via Authorization header
+4. Server-side RBAC middleware validates role and permissions
+5. Client-side `useAuth` hook manages authentication state
+
+### Data Flow
+1. **Form Submission** → `/api/quote-requests` → Postgres + N8N webhook
+2. **File Upload** → N8N → Google Drive → Drive link stored in DB
+3. **History View** → `/api/quote-requests` → Filtered by user role
+4. **User Management** → `/api/admin/users` → Admin/Superadmin only
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Vite** - Build tool and dev server
+- **Vite 7** - Build tool and dev server with HMR
 - **React 19** - UI framework with latest features
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS framework
+- **TypeScript 5.9** - Type safety and developer experience
+- **Tailwind CSS 3** - Utility-first CSS framework
 - **Radix UI** - Accessible component primitives
 - **Lucide React** - Icon library
 
@@ -264,21 +286,45 @@ curl -X DELETE /api/admin/test-users \
 
 ### Deploy to Vercel
 
-1. **Push to GitHub**
+1. **Push to GitHub** - Vercel auto-deploys on push to main
 2. **Import to Vercel:** Connect your repository at vercel.com
-3. **Configure Environment Variables:** Add `VITE_N8N_WEBHOOK_URL`
+3. **Configure Environment Variables:** Add database credentials (auto-added with Vercel Postgres)
 4. **Add Postgres Database:** Storage tab → Create → Postgres
-5. **Run Database Migrations:** Execute SQL files in Postgres dashboard (in order listed above)
+5. **Run Database Migrations:** Execute SQL files in Postgres dashboard (see DATABASE_MIGRATIONS.md)
 6. **Create Admin User:** Run SQL to insert initial superadmin
-7. **Deploy:** Push to main branch or trigger manual deploy
+7. **Verify Deployment:**
+   - Check build logs for errors
+   - Test routing: `/`, `/history`, `/users`
+   - Verify API routes: `/api/auth/login`, `/api/quote-requests`
+   - Test authentication and RBAC
 
 ### Environment Variables
 
 **Required:**
-- `VITE_N8N_WEBHOOK_URL` - Your N8N webhook endpoint
+- `POSTGRES_URL` - Database connection string (auto-configured by Vercel)
+- `POSTGRES_PRISMA_URL` - Pooled connection (auto-configured)
+- `POSTGRES_URL_NON_POOLING` - Direct connection (auto-configured)
 
-**Auto-configured by Vercel:**
-- `POSTGRES_URL`, `POSTGRES_PRISMA_URL`, `POSTGRES_URL_NON_POOLING`
+**Optional:**
+- `VITE_N8N_WEBHOOK_URL` - N8N webhook endpoint (if using N8N integration)
+
+### Vercel Configuration
+
+The `vercel.json` file configures:
+```json
+{
+  "rewrites": [{
+    "source": "/((?!api).*)",  // Exclude API routes
+    "destination": "/index.html"  // SPA fallback
+  }]
+}
+```
+
+This ensures:
+- All non-API routes serve the SPA
+- Page refreshes work on any route
+- Direct URL navigation works
+- API routes are not intercepted
 
 ### Post-Deployment Checklist
 - [ ] Database migrations completed

@@ -55,11 +55,36 @@ Vercel will automatically:
 - ✅ Detect **Vite** framework
 - ✅ Use build command: `npm run build`
 - ✅ Set output directory: `dist`
-- ✅ Configure SPA routing
+- ✅ Configure Node.js version: 18.x
+
+**Critical: SPA Routing Configuration**
+
+The `vercel.json` file must include:
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+**Why this matters:**
+- ✅ Enables clean URLs (`/history` vs `/#/history`)
+- ✅ Page refreshes work on any route
+- ✅ Direct URL navigation works
+- ✅ API routes (`/api/*`) are not intercepted
+- ✅ Backward compatible with old hash URLs (auto-migrate)
 
 **Important Files:**
-- `vercel.json` - Deployment configuration
+- `vercel.json` - Deployment and routing configuration
 - `api/webhook.js` - Serverless function for CORS proxy
+- `api/middleware/rbac.ts` - Authentication middleware
 - `.vercelignore` - Excludes test files and docs
 
 ---
