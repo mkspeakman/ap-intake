@@ -6,27 +6,29 @@ import Layout from './components/Layout';
 import { useAuth } from './contexts/AuthContext';
 
 function Router() {
-  // Simple hash-based routing for now
-  const [path, setPath] = useState(window.location.hash.slice(1) || '/');
+  // Browser history mode routing
+  const [path, setPath] = useState(window.location.pathname);
   const { user, hasPermission } = useAuth();
 
-  // Listen for hash changes
+  // Listen for browser history changes
   useEffect(() => {
-    const handleHashChange = () => {
-      setPath(window.location.hash.slice(1) || '/');
+    const handlePopState = () => {
+      setPath(window.location.pathname);
     };
     
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Redirect to home if trying to access protected routes without permission
   useEffect(() => {
     if (path === '/history' && !hasPermission('canViewHistory')) {
-      window.location.hash = '/';
+      window.history.pushState({}, '', '/');
+      setPath('/');
     }
     if (path === '/users' && (!user || (user.role !== 'admin' && user.role !== 'superadmin'))) {
-      window.location.hash = '/';
+      window.history.pushState({}, '', '/');
+      setPath('/');
     }
   }, [path, user, hasPermission]);
 

@@ -12,25 +12,26 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [currentPath, setCurrentPath] = useState(window.location.hash.slice(1) || '/');
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout, isAuthenticated, hasPermission } = useAuth();
   
-  // Listen for hash changes
+  // Listen for browser history changes
   useEffect(() => {
-    const handleHashChange = () => {
-      setCurrentPath(window.location.hash.slice(1) || '/');
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
     };
     
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
   
   const navigateTo = (path: string) => {
-    window.location.hash = path;
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
   };
 
   const handleUserClick = () => {
