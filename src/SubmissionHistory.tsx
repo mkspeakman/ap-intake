@@ -9,7 +9,6 @@ import {
   Search, 
   Filter, 
   ExternalLink, 
-  Building2,
   ChevronDown,
   FileText,
   CheckCircle2,
