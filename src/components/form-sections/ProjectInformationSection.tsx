@@ -132,17 +132,19 @@ export function ProjectInformationSection({
         
         <div
           className={`border-2 border-dashed rounded-lg px-8 py-0 text-center transition-colors min-h-[204px] flex flex-col items-center justify-center ${
-            dragActive ? 'border-blue-500 bg-blue-50/10' : 'border-slate-300 bg-blue-50/30'
+            dragActive 
+              ? 'border-primary bg-primary/5' 
+              : 'border-input bg-background hover:bg-accent'
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-sm mb-2">
+          <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <p className="text-sm text-foreground mb-2">
             Drag and drop files here, or{' '}
-            <label className="text-blue-500 hover:text-blue-600 cursor-pointer underline">
+            <label className="text-primary hover:opacity-80 cursor-pointer underline">
               browse
               <input
                 type="file"
@@ -153,8 +155,8 @@ export function ProjectInformationSection({
               />
             </label>
           </p>
-          <p className="text-xs text-gray-400">
-            Supported: STEP, ITES, STL, PDF, DXF, DWG, ZIP
+          <p className="text-xs text-muted-foreground">
+            Supported: STEP, IGES, STL, PDF, DXF, DWG, ZIP
           </p>
         </div>
 
