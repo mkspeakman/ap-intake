@@ -213,7 +213,7 @@ export default function SubmissionHistory() {
                     <TableHead className="w-[150px]">Quote Number</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Project</TableHead>
-                    <TableHead className="w-[210px]">Submitted</TableHead>
+                    <TableHead className="w-[250px]">Submitted</TableHead>
                     <TableHead className="w-[200px]">Submitted by</TableHead>
                     <TableHead className="w-[80px]">Files</TableHead>
                     <TableHead className="w-[50px]"></TableHead>

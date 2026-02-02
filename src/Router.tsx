@@ -17,6 +17,9 @@ function Router() {
       const newPath = hash.slice(1); // Remove the #
       window.history.replaceState({}, '', newPath);
       setPath(newPath);
+    } else {
+      // Ensure path is synced with current URL on mount
+      setPath(window.location.pathname);
     }
   }, []);
 
