@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { User, LogOut, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { LoginModal } from '@/components/LoginModal';
 import { FeedbackWidget } from '@/components/FeedbackWidget';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -19,6 +20,7 @@ export default function Layout({ children }: LayoutProps) {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout, isAuthenticated, hasPermission } = useAuth();
+  const { resolvedTheme } = useTheme();
   
   // Listen for browser history changes
   useEffect(() => {
@@ -78,14 +80,16 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       {/* Header - 48px tall */}
-      <header className="flex-shrink-0 bg-[#0A0A0B] z-50 h-12">
+      <header className={`flex-shrink-0 z-50 h-12 transition-colors ${
+        resolvedTheme === 'light' ? 'bg-[#FCB716]' : 'bg-[#0A0A0B]'
+      }`}>
         <div className="h-full px-6 flex items-center justify-between">
           {/* Logo */}
           <button onClick={() => navigateTo('/')} className="flex items-center">
             <img 
-              src="/ap-ai-on-black.svg" 
+              src={resolvedTheme === 'light' ? '/ap-ai_on-gold.svg' : '/ap-ai_on-black.svg'} 
               alt="AP-AI Logo" 
-              className="h-6"
+              className="h-6 w-auto"
             />
           </button>
 
@@ -101,9 +105,9 @@ export default function Layout({ children }: LayoutProps) {
                   disabled={currentPath === '/'}
                   className={`h-8 ${
                     currentPath === '/' 
-                      ? 'text-white bg-white/10 cursor-default' 
-                      : 'text-white/70 hover:text-white hover:bg-white/5'
-                  }`}
+                      ? (resolvedTheme === 'light' ? 'bg-[#0A0A0B]/10 cursor-default' : 'bg-white/10 cursor-default')
+                      : (resolvedTheme === 'light' ? 'hover:bg-[#0A0A0B]/10' : 'hover:bg-white/10')
+                  } ${resolvedTheme === 'light' ? 'text-[#0A0A0B]' : 'text-white'}`}
                 >
                   New Request
                 </Button>
@@ -116,9 +120,9 @@ export default function Layout({ children }: LayoutProps) {
                     disabled={currentPath === '/history'}
                     className={`h-8 ${
                       currentPath === '/history' 
-                        ? 'text-white bg-white/10 cursor-default' 
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
-                    }`}
+                        ? (resolvedTheme === 'light' ? 'bg-[#0A0A0B]/10 cursor-default' : 'bg-white/10 cursor-default')
+                        : (resolvedTheme === 'light' ? 'hover:bg-[#0A0A0B]/10' : 'hover:bg-white/10')
+                    } ${resolvedTheme === 'light' ? 'text-[#0A0A0B]' : 'text-white'}`}
                   >
                     History
                   </Button>
@@ -132,9 +136,9 @@ export default function Layout({ children }: LayoutProps) {
                     disabled={currentPath === '/users'}
                     className={`h-8 ${
                       currentPath === '/users' 
-                        ? 'text-white bg-white/10 cursor-default' 
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
-                    }`}
+                        ? (resolvedTheme === 'light' ? 'bg-[#0A0A0B]/10 cursor-default' : 'bg-white/10 cursor-default')
+                        : (resolvedTheme === 'light' ? 'hover:bg-[#0A0A0B]/10' : 'hover:bg-white/10')
+                    } ${resolvedTheme === 'light' ? 'text-[#0A0A0B]' : 'text-white'}`}
                   >
                     Users
                   </Button>
@@ -151,7 +155,9 @@ export default function Layout({ children }: LayoutProps) {
                 variant="ghost"
                 size="sm"
                 onClick={handleUserClick}
-                className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/5"
+                className={`h-8 w-8 p-0 ${
+                  resolvedTheme === 'light' ? 'hover:bg-[#0A0A0B]/10 text-[#0A0A0B]' : 'hover:bg-white/10 text-white'
+                }`}
               >
                 <User className="h-4 w-4" />
               </Button>

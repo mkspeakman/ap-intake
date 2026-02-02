@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   const cycleTheme = () => {
     if (theme === 'light') {
@@ -23,7 +23,9 @@ export function ThemeToggle() {
       size="icon"
       onClick={cycleTheme}
       title={`Current theme: ${theme}`}
-      className="h-9 w-9"
+      className={`h-9 w-9 ${
+        resolvedTheme === 'light' ? 'hover:bg-[#0A0A0B]/10 text-[#0A0A0B]' : 'hover:bg-white/10 text-white'
+      }`}
     >
       <Icon className="h-4 w-4" />
       <span className="sr-only">Toggle theme</span>
