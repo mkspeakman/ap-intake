@@ -112,7 +112,7 @@
 
   .dark {
     /* ============================================
-       SEMANTIC TOKENS - Dark Mode
+       SEMANTIC TOKENS - Dark Mode (Brand-Enhanced)
        ============================================ */
     
     /* Backgrounds */
@@ -127,30 +127,30 @@
     --popover: 270 8% 8%;
     --popover-foreground: 30 9% 94.5%;
     
-    /* Primary Action Color */
-    --primary: 213 50% 70%;            /* Lighter blue for dark mode */
+    /* Primary Action Color - Brighter blue for dark mode */
+    --primary: 213 60% 65%;            /* Lighter, more vibrant blue #5B9AD5 */
     --primary-foreground: 0 0% 100%;
     
-    /* Secondary/Highlight Color */
-    --secondary: 43 97% 60%;           /* Brighter gold for dark mode */
+    /* Secondary/Highlight Color - Gold remains vibrant */
+    --secondary: 43 97% 60%;           /* Brighter gold for dark mode #FDCA42 */
     --secondary-foreground: 270 8% 4%;
     
     /* Muted/Subtle Elements */
-    --muted: 300 2% 25%;               /* Darker muted */
-    --muted-foreground: 208 9% 76%;    /* Light gray text */
+    --muted: 270 8% 15%;               /* Darker muted background */
+    --muted-foreground: 208 9% 70%;    /* Lighter gray text #A8B5BD */
     
-    /* Accent Color */
-    --accent: 210 8% 30%;              /* Medium gray for dark mode */
+    /* Accent Color - Subtle hover state */
+    --accent: 270 8% 12%;              /* Slightly lighter than muted for hover */
     --accent-foreground: 30 9% 94.5%;
     
     /* Destructive/Error States */
-    --destructive: 0 63% 31%;
+    --destructive: 0 70% 55%;          /* Brighter red for visibility #E74C3C */
     --destructive-foreground: 0 0% 100%;
     
     /* Borders & Inputs */
-    --border: 300 2% 25%;
-    --input: 300 2% 25%;
-    --ring: 213 40% 65%;
+    --border: 270 6% 20%;              /* Visible but not harsh #2E2E30 */
+    --input: 270 6% 20%;
+    --ring: 213 60% 65%;               /* Match primary for consistency */
   }
 }
 

@@ -6,6 +6,7 @@ import { User, LogOut, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginModal } from '@/components/LoginModal';
 import { FeedbackWidget } from '@/components/FeedbackWidget';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface LayoutProps {
   children: ReactNode;
@@ -140,6 +141,9 @@ export default function Layout({ children }: LayoutProps) {
                 )}
               </>
             )}
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
             {/* User Menu */}
             <div className="relative" ref={dropdownRef}>
