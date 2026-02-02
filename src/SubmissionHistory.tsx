@@ -214,7 +214,7 @@ export default function SubmissionHistory() {
                     <TableHead className="w-[150px]">Quote Number</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Project</TableHead>
-                    <TableHead className="w-[185px]">Submitted</TableHead>
+                    <TableHead className="w-[210px]">Submitted</TableHead>
                     <TableHead className="w-[200px]">Submitted by</TableHead>
                     <TableHead className="w-[80px]">Files</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
@@ -233,12 +233,9 @@ export default function SubmissionHistory() {
                         {submission.quote_number}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <div className="font-medium">{submission.company_name || 'N/A'}</div>
-                            <div className="text-xs text-muted-foreground">{submission.contact_name || 'N/A'}</div>
-                          </div>
+                        <div>
+                          <div className="font-medium">{submission.company_name || 'N/A'}</div>
+                          <div className="text-xs text-muted-foreground">{submission.contact_name || 'N/A'}</div>
                         </div>
                       </TableCell>
                       <TableCell>
