@@ -372,6 +372,7 @@ export default function SubmissionHistory() {
 
                                 {/* Material Difficulty */}
                                 {submission.capability_analysis.material_difficulty && 
+                                 submission.capability_analysis.material_difficulty.classification && 
                                  submission.capability_analysis.material_difficulty.classification !== 'Standard' && (
                                   <div className="space-y-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded">
                                     <div className="text-xs font-medium text-blue-800 dark:text-blue-200 uppercase tracking-wider">
@@ -395,7 +396,8 @@ export default function SubmissionHistory() {
                                  (submission.capability_analysis.cost_estimate || submission.capability_analysis.lead_time_estimate) && (
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {/* Cost Estimate */}
-                                    {submission.capability_analysis.cost_estimate && (
+                                    {submission.capability_analysis.cost_estimate && 
+                                     submission.capability_analysis.cost_estimate.total_cost > 0 && (
                                       <div className="space-y-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded">
                                         <div className="text-xs font-medium text-green-800 dark:text-green-200 uppercase tracking-wider">
                                           Cost Estimate
@@ -431,15 +433,18 @@ export default function SubmissionHistory() {
                                               ${(submission.capability_analysis.cost_estimate.total_cost ?? 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                             </span>
                                           </div>
-                                          <div className="text-xs text-muted-foreground italic mt-1">
-                                            Confidence: {submission.capability_analysis.cost_estimate.confidence_level}
-                                          </div>
+                                          {submission.capability_analysis.cost_estimate.confidence_level && (
+                                            <div className="text-xs text-muted-foreground italic mt-1">
+                                              Confidence: {submission.capability_analysis.cost_estimate.confidence_level}
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     )}
 
                                     {/* Lead Time Estimate */}
-                                    {submission.capability_analysis.lead_time_estimate && (
+                                    {submission.capability_analysis.lead_time_estimate && 
+                                     submission.capability_analysis.lead_time_estimate.total_days > 0 && (
                                       <div className="space-y-2 p-3 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded">
                                         <div className="text-xs font-medium text-purple-800 dark:text-purple-200 uppercase tracking-wider">
                                           Lead Time Estimate
@@ -447,23 +452,23 @@ export default function SubmissionHistory() {
                                         <div className="space-y-1">
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Setup:</span>
-                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.setup_days} days</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.setup_days ?? 0} days</span>
                                           </div>
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Production:</span>
-                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.production_days} days</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.production_days ?? 0} days</span>
                                           </div>
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Queue:</span>
-                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.queue_days} days</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.queue_days ?? 0} days</span>
                                           </div>
                                           <div className="flex justify-between text-sm pt-2 border-t">
                                             <span className="font-medium">Total Lead Time:</span>
                                             <span className="font-bold text-lg text-purple-700 dark:text-purple-300">
-                                              {submission.capability_analysis.lead_time_estimate.total_days} days
+                                              {submission.capability_analysis.lead_time_estimate.total_days ?? 0} days
                                             </span>
                                           </div>
-                                          {submission.capability_analysis.lead_time_estimate.expedite_possible && (
+                                          {submission.capability_analysis.lead_time_estimate.expedite_possible && submission.capability_analysis.lead_time_estimate.expedite_days && (
                                             <div className="text-xs text-green-600 dark:text-green-400 italic mt-1">
                                               ⚡ Expedite available: {submission.capability_analysis.lead_time_estimate.expedite_days} days
                                             </div>
