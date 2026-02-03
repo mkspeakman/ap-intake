@@ -403,17 +403,17 @@ export default function SubmissionHistory() {
                                         <div className="space-y-1">
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Material:</span>
-                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.material_cost.toFixed(2)}</span>
+                                            <span className="font-medium">${(submission.capability_analysis.cost_estimate.material_cost ?? 0).toFixed(2)}</span>
                                           </div>
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Machining:</span>
-                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.machining_cost.toFixed(2)}</span>
+                                            <span className="font-medium">${(submission.capability_analysis.cost_estimate.machining_cost ?? 0).toFixed(2)}</span>
                                           </div>
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Setup:</span>
-                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.setup_cost.toFixed(2)}</span>
+                                            <span className="font-medium">${(submission.capability_analysis.cost_estimate.setup_cost ?? 0).toFixed(2)}</span>
                                           </div>
-                                          {submission.capability_analysis.cost_estimate.outsourcing_cost > 0 && (
+                                          {submission.capability_analysis.cost_estimate.outsourcing_cost && submission.capability_analysis.cost_estimate.outsourcing_cost > 0 && (
                                             <div className="flex justify-between text-sm">
                                               <span className="text-muted-foreground">Outsourcing:</span>
                                               <span className="font-medium">${submission.capability_analysis.cost_estimate.outsourcing_cost.toFixed(2)}</span>
@@ -422,13 +422,13 @@ export default function SubmissionHistory() {
                                           <div className="flex justify-between text-sm pt-2 border-t">
                                             <span className="font-medium">Per Part:</span>
                                             <span className="font-bold text-green-700 dark:text-green-300">
-                                              ${submission.capability_analysis.cost_estimate.per_unit_cost.toFixed(2)}
+                                              ${(submission.capability_analysis.cost_estimate.per_unit_cost ?? 0).toFixed(2)}
                                             </span>
                                           </div>
                                           <div className="flex justify-between text-sm pt-2 border-t">
                                             <span className="font-medium">Total Cost:</span>
                                             <span className="font-bold text-lg text-green-700 dark:text-green-300">
-                                              ${submission.capability_analysis.cost_estimate.total_cost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                              ${(submission.capability_analysis.cost_estimate.total_cost ?? 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                             </span>
                                           </div>
                                           <div className="text-xs text-muted-foreground italic mt-1">
