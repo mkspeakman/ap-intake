@@ -518,46 +518,77 @@ export default function SubmissionHistory() {
                                 {/* Machine Matches - Only show if NOT insufficient data */}
                                 {submission.review_status !== 'insufficient_data' && 
                                  submission.machine_matches && 
-                                 submission.machine_matches.length > 0 && (
-                                  <div className="space-y-2">
-                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                      Matched Equipment ({submission.machine_matches.length})
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                      {submission.machine_matches.slice(0, 4).map((match, i) => (
-                                        <div 
-                                          key={i}
-                                          className="flex items-start justify-between p-3 bg-muted/50 rounded border border-border/50 hover:border-border transition-colors"
-                                        >
-                                          <div className="flex-1 min-w-0">
-                                            <div className="font-medium text-sm truncate">
-                                              {match.name}
-                                            </div>
-                                            <div className="text-xs text-muted-foreground mt-0.5">
-                                              {match.matched_operations.join(', ')}
-                                            </div>
-                                            {match.notes && (
-                                              <div className="text-xs text-muted-foreground mt-1">
-                                                {match.notes}
-                                              </div>
-                                            )}
-                                          </div>
-                                          <div className="flex flex-col items-end ml-3 flex-shrink-0">
-                                            <div className="flex items-center gap-1">
-                                              <TrendingUp className="h-3 w-3 text-green-600" />
-                                              <span className="text-xs font-semibold text-green-600">
-                                                {Math.round(match.match_score)}%
-                                              </span>
-                                            </div>
-                                            <div className="text-xs text-muted-foreground">
-                                              confidence
-                                            </div>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
+                                 submission.machine_matches.length > 0 && (() => {
+                                   const highConfidence = submission.machine_matches.filter(m => m.match_score >= 70);
+                                   const mediumLowConfidence = submission.machine_matches.filter(m => m.match_score < 70);
+                                   
+                                   return (
+                                     <div className="space-y-3">
+                                       <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                         Matched Equipment ({submission.machine_matches.length})
+                                       </div>
+                                       
+                                       {/* High Confidence Machines - Card Display */}
+                                       {highConfidence.length > 0 && (
+                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                           {highConfidence.map((match, i) => (
+                                             <div 
+                                               key={i}
+                                               className="flex items-start justify-between p-3 bg-muted/50 rounded border border-border/50 hover:border-border transition-colors"
+                                             >
+                                               <div className="flex-1 min-w-0">
+                                                 <div className="font-medium text-sm truncate">
+                                                   {match.name}
+                                                 </div>
+                                                 <div className="text-xs text-muted-foreground mt-0.5">
+                                                   {match.matched_operations.join(', ')}
+                                                 </div>
+                                                 {match.notes && (
+                                                   <div className="text-xs text-muted-foreground mt-1">
+                                                     {match.notes}
+                                                   </div>
+                                                 )}
+                                               </div>
+                                               <div className="flex flex-col items-end ml-3 flex-shrink-0">
+                                                 <div className="flex items-center gap-1">
+                                                   <TrendingUp className="h-3 w-3 text-green-600" />
+                                                   <span className="text-xs font-semibold text-green-600">
+                                                     {Math.round(match.match_score)}%
+                                                   </span>
+                                                 </div>
+                                                 <div className="text-xs text-muted-foreground">
+                                                   confidence
+                                                 </div>
+                                               </div>
+                                             </div>
+                                           ))}
+                                         </div>
+                                       )}
+                                       
+                                       {/* Medium/Low Confidence Machines - Minimal List */}
+                                       {mediumLowConfidence.length > 0 && (
+                                         <div className="space-y-1.5 pt-2 border-t border-border/50">
+                                           <div className="text-xs text-muted-foreground uppercase tracking-wider">
+                                             Additional Capable Machines
+                                           </div>
+                                           <div className="space-y-0.5">
+                                             {mediumLowConfidence.map((match, i) => (
+                                               <div 
+                                                 key={i}
+                                                 className="flex items-center justify-between py-1 px-2 hover:bg-muted/30 rounded text-xs"
+                                               >
+                                                 <span className="text-muted-foreground">{match.name}</span>
+                                                 <span className="text-muted-foreground/60 font-mono">
+                                                   {Math.round(match.match_score)}%
+                                                 </span>
+                                               </div>
+                                             ))}
+                                           </div>
+                                         </div>
+                                       )}
+                                     </div>
+                                   );
+                                 })()}
 
                                 {/* Outsourced Steps */}
                                 {submission.outsourced_steps && submission.outsourced_steps.length > 0 && (
