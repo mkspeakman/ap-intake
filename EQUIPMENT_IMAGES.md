@@ -1,135 +1,67 @@
 # Equipment Machine Images
 
-This document describes how to add authentic machine photos to the equipment database.
+This document describes the machine sprite sheet implementation.
 
-## Image Requirements
+## Sprite Sheet Implementation
 
-- **Size**: 128x128 pixels minimum (square aspect ratio)
-- **Format**: JPG or PNG
-- **Background**: White seamless background preferred
-- **Quality**: High-resolution product photos showing the actual machine
-- **Style**: Professional product photography
+The system uses a single sprite sheet image containing all machine photos for optimal performance and consistency.
 
-## Setup Steps
+### Sprite Sheet Layout
 
-### 1. Add Images to Public Folder
+**File**: `public/equipment/machines-sprite.jpg`
+**Grid**: 6 columns × 2 rows (12 machines total)
+**Individual image size**: ~200px × 200px (approximate)
 
-Create an `equipment` directory in the `public` folder and add machine images:
-
+**Layout**:
 ```
-public/
-  equipment/
-    dnm-4500.jpg
-    haas-vf2ss.jpg
-    haas-vf2ss-5axis.jpg
-    okuma-mb4000h.jpg
-    doosan-puma-2100sy.jpg
-    haas-st10.jpg
-    mazak-integrex-200y.jpg
-    brother-speedio.jpg
-    makino-edm.jpg
-    haas-umc750.jpg
+Row 1: [0] DNM 4500  [1] Haas VF-2SS  [2] Haas VF-2SS 5-Axis  [3] Okuma MB-4000H  [4] Doosan Puma 2100SY  [5] Haas UMC-750
+Row 2: [6] Haas ST-10  [7] Mazak Integrex 200Y  [8] Brother Speedio  [9] Makino EDM  [10] (unused)  [11] (unused)
 ```
 
-### 2. Update Database
+### Machine ID Mapping
 
-Run the SQL migration to add the `image_url` column and populate URLs:
+The sprite positions are mapped in `src/lib/machine-sprite.ts`:
 
-```sql
--- Run this in your Vercel Postgres console or via migrations
-\i database/add-equipment-images.sql
-```
+| Machine ID | Position | Machine Name |
+|------------|----------|--------------|
+| DNM_4500_001 | Row 0, Col 0 | DN Solutions DNM 4500 #1 |
+| DNM_4500_002 | Row 0, Col 0 | DN Solutions DNM 4500 #2 |
+| VF2SS_001 | Row 0, Col 1 | Haas VF-2 SS |
+| VF2SS_5AXIS_001 | Row 0, Col 2 | Haas VF-2 SS 5-Axis |
+| OKUMA_MB4000H_001 | Row 0, Col 3 | Okuma MB-4000H |
+| PUMA_2100SY_001 | Row 0, Col 4 | Doosan Puma 2100SY |
+| UMC750_001 | Row 0, Col 5 | Haas UMC-750 |
+| ST10_001 | Row 1, Col 0 | Haas ST-10 #1 |
+| ST10_002 | Row 1, Col 0 | Haas ST-10 #2 |
+| INTEGREX_200Y_001 | Row 1, Col 1 | Mazak Integrex i-200Y |
+| SPEEDIO_S700X1_001 | Row 1, Col 2 | Brother Speedio S700X1 |
+| MAKINO_EDGE3_001 | Row 1, Col 3 | Makino EDGE3 |
 
-Or manually:
+## Setup
 
-```sql
-ALTER TABLE equipment ADD COLUMN IF NOT EXISTS image_url TEXT;
+1. **Save the sprite sheet** to `public/equipment/machines-sprite.jpg`
+2. Images are automatically mapped and displayed for high-confidence matches (≥70%)
 
-UPDATE equipment SET image_url = '/equipment/dnm-4500.jpg' WHERE machine_id = 'DNM_4500_001';
-UPDATE equipment SET image_url = '/equipment/dnm-4500.jpg' WHERE machine_id = 'DNM_4500_002';
--- ... (see add-equipment-images.sql for full list)
-```
+## Technical Details
 
-### 3. Image Sources
+### CSS Background Positioning
 
-**Recommended sources for authentic machine photos:**
+- **Background Size**: `600% 200%` (6 columns, 2 rows)
+- **Position Calculation**: 
+  - X: `col × 20%` (0%, 20%, 40%, 60%, 80%, 100%)
+  - Y: `row × 100%` (0%, 100%)
 
-1. **Manufacturer websites** - Official product pages often have high-quality photos
-2. **Direct from manufacturers** - Contact sales/marketing for press kit images
-3. **Equipment dealer websites** - Used equipment dealers often have actual photos
-4. **Your own photos** - Take professional photos of your actual machines
+### Display Features
 
-**Specific manufacturer links:**
+- **Size**: 128×128px squares
+- **Background**: White with subtle border
+- **Fallback**: Machines without sprites display without image
+- **Performance**: Single image load for all machines
 
-- DN Solutions: https://www.dnsolutions.com
-- Haas: https://www.haascnc.com
-- Okuma: https://www.okuma.com
-- Doosan: https://www.doosanmachinetools.com
-- Mazak: https://www.mazak.com
-- Brother: https://www.brother.com/machine-tools
-- Makino: https://www.makino.com
+## Updating the Sprite
 
-### 4. Image Processing
+To add or update machines:
 
-To create consistent images with white backgrounds:
-
-```bash
-# Using ImageMagick
-convert input.jpg -resize 128x128^ -gravity center -extent 128x128 -background white -flatten output.jpg
-
-# Using online tools
-# - remove.bg (background removal)
-# - Photopea (free Photoshop alternative)
-# - Canva (add white background)
-```
-
-### 5. Placeholder Images
-
-If actual photos aren't available yet, you can:
-
-1. Use manufacturer stock photos temporarily
-2. Use generic machine type illustrations
-3. Leave `image_url` null - the UI will gracefully hide missing images
-
-## Current Machine List
-
-| Machine ID | Machine Name | Type | Image Status |
-|------------|--------------|------|--------------|
-| DNM_4500_001 | DN Solutions DNM 4500 #1 | 3-Axis Vertical Mill | ⚠️ Needs photo |
-| DNM_4500_002 | DN Solutions DNM 4500 #2 | 3-Axis Vertical Mill | ⚠️ Needs photo |
-| VF2SS_001 | Haas VF-2 SS | 3-Axis Vertical Mill | ⚠️ Needs photo |
-| VF2SS_5AXIS_001 | Haas VF-2 SS 5-Axis | 5-Axis Vertical Mill | ⚠️ Needs photo |
-| OKUMA_MB4000H_001 | Okuma MB-4000H | Horizontal Mill | ⚠️ Needs photo |
-| PUMA_2100SY_001 | Doosan Puma 2100SY | CNC Lathe with Y-axis | ⚠️ Needs photo |
-| ST10_001 | Haas ST-10 #1 | CNC Lathe | ⚠️ Needs photo |
-| ST10_002 | Haas ST-10 #2 | CNC Lathe | ⚠️ Needs photo |
-| INTEGREX_200Y_001 | Mazak Integrex i-200Y | Mill-Turn Center | ⚠️ Needs photo |
-| SPEEDIO_S700X1_001 | Brother Speedio S700X1 | High-Speed 3-Axis Mill | ⚠️ Needs photo |
-| MAKINO_EDGE3_001 | Makino EDGE3 | Wire EDM | ⚠️ Needs photo |
-| UMC750_001 | Haas UMC-750 | 5-Axis Universal Mill | ⚠️ Needs photo |
-
-## Frontend Implementation
-
-The images are displayed in the high-confidence machine match cards (≥70% match score). Features:
-
-- **Graceful fallback**: Images that fail to load are automatically hidden
-- **Responsive**: 128x128px square maintains consistency
-- **White background**: Matches Swiss design aesthetic
-- **Border**: Subtle border for definition
-
-## Testing
-
-After adding images:
-
-1. Test locally: `npm run dev`
-2. Navigate to Submission History
-3. Expand a quote with capability analysis
-4. Verify images appear for high-confidence matches
-5. Check that missing images don't break the layout
-
-## Notes
-
-- Images are served from `/public/equipment/` directory
-- URLs are stored in database as `/equipment/filename.jpg`
-- Frontend uses `onError` handler to gracefully hide broken images
-- No image = card layout adapts (no empty space)
+1. Edit `src/lib/machine-sprite.ts` to add new machine ID mappings
+2. Update the sprite sheet image with new machine photos
+3. Ensure grid layout matches (6×2)

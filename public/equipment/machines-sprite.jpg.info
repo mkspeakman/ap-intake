@@ -1,0 +1,6 @@
+This file should contain the sprite sheet image uploaded by the user.
+Save the sprite sheet as: public/equipment/machines-sprite.jpg
+
+Layout (6 columns, 2 rows):
+Row 1: dnm-4500, haas-vf2ss, haas-vf2ss-5axis, okuma-mb4000h, doosan-puma-2100sy, haas-umc750
+Row 2: haas-st10, mazak-integrex-200y, brother-speedio, makino-edm, (unused), (unused)
