@@ -305,8 +305,9 @@ function validateRequest(body: any): { isValid: boolean; message: string; errors
     errors.push('No materials specified');
   }
   
-  // Check for valid quantity
-  if (!body.quantity || body.quantity <= 0 || !Number.isFinite(body.quantity)) {
+  // Check for valid quantity (handle both string and number)
+  const quantityValue = typeof body.quantity === 'string' ? parseInt(body.quantity, 10) : body.quantity;
+  if (!body.quantity || isNaN(quantityValue) || quantityValue <= 0) {
     errors.push('Invalid or missing quantity');
   }
   
