@@ -13,6 +13,10 @@ A modern web application for collecting and managing manufacturing quote request
 - **File Upload** - Multi-file upload with progress tracking to Google Drive
 - **Real-time Processing** - N8N webhook integration for automated workflows
 - **Equipment Matching** - AI-powered capability analysis and machine matching
+- **Cost Estimation** - Automated material and machining cost calculations
+- **Lead Time Estimates** - Production and queue time calculations
+- **Material Assessment** - Difficulty ratings and risk flags for exotic materials
+- **Dark Mode** - Full theme support with system preference detection
 
 ### Technical Features
 - ✨ Modern, responsive UI with Radix UI components
@@ -235,7 +239,10 @@ ap-intake/
 ### Quote Requests
 - `POST /api/quote-requests` - Create new quote
 - `GET /api/quote-requests` - List all quotes (authenticated)
-- `GET /api/quote-requests/[id]/drive-link` - Get Google Drive link for quote files
+- `PATCH /api/quote-requests/[id]/drive-link` - Update Google Drive link
+- `POST /api/analyze-capability` - Run equipment capability analysis
+  - Body: `{ quote_id, materials, quantity, certifications, description }`
+  - Returns: Cost estimates, lead time, material difficulty, risk flags
 
 ### User Management (Admin/Superadmin)
 - `GET /api/admin/users` - List users (add `?includeTestUsers=true` to include test users)
@@ -370,14 +377,23 @@ See [TESTING_CHECKLIST.md](TESTING_CHECKLIST.md) for comprehensive testing proce
 
 ## 📚 Additional Documentation
 
+### Core Documentation
 - **[TESTING_CHECKLIST.md](TESTING_CHECKLIST.md)** - Pre-commit testing procedures (MANDATORY)
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete system architecture
 - **[DATABASE_MIGRATIONS.md](DATABASE_MIGRATIONS.md)** - Database schema and migrations
 - **[LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)** - Local development setup
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide
 - **[RBAC_GUIDE.md](RBAC_GUIDE.md)** - Role-based access control details
+
+### Design System
 - **[DESIGN_SYSTEM_FINAL.md](DESIGN_SYSTEM_FINAL.md)** - UI design system
 - **[TYPOGRAPHY_SYSTEM.md](TYPOGRAPHY_SYSTEM.md)** - Typography tokens
+- **[DESIGN_TOKENS.md](DESIGN_TOKENS.md)** - Color and spacing tokens
+
+### Feature Documentation
+- **[docs/CAPABILITY_ANALYSIS_VALUE_ASSESSMENT.md](docs/CAPABILITY_ANALYSIS_VALUE_ASSESSMENT.md)** - Capability analysis improvements
+- **[docs/IMPLEMENTATION_SUMMARY_2026-02-02.md](docs/IMPLEMENTATION_SUMMARY_2026-02-02.md)** - Recent implementation details
+- **[HISTORY_VIEW.md](HISTORY_VIEW.md)** - Submission history features
 
 ## 🔒 Security Notes
 
