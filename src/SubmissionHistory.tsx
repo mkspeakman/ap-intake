@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverTrigger, PopoverContent, PopoverOverlay } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   Search, 
   Filter, 
@@ -17,11 +18,13 @@ import {
   Cpu,
   TrendingUp
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import type { MachineMatch, CapabilityAnalysis } from '@/types/database.types';
 
 interface Submission {
   id: number;
   quote_number: string;
+  status: string;
   company_name: string | null;
   contact_name: string | null;
   email: string | null;
@@ -31,6 +34,7 @@ interface Submission {
   quantity: string;
   created_at: string;
   drive_link: string | null;
+  drive_file_id: string | null;
   certifications: string[];
   description: string | null;
   phone: string | null;
@@ -50,10 +54,42 @@ export default function SubmissionHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedSubmissionDetails, setSelectedSubmissionDetails] = useState<Submission | null>(null);
+  const [reanalyzing, setReanalyzing] = useState<number | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchSubmissions();
   }, []);
+
+  const handleViewDetails = (submission: Submission) => {
+    setSelectedSubmissionDetails(submission);
+    setDetailsDialogOpen(true);
+  };
+
+  const handleReanalyze = async (submission: Submission) => {
+    setReanalyzing(submission.id);
+    try {
+      await fetch('/api/analyze-capability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quote_id: submission.id,
+          materials: submission.materials,
+          quantity: submission.quantity,
+          certifications: submission.certifications,
+          description: submission.description,
+        }),
+      });
+      // Refresh submissions to show updated analysis
+      await fetchSubmissions();
+    } catch (err) {
+      console.error('Error re-analyzing:', err);
+    } finally {
+      setReanalyzing(null);
+    }
+  };
 
   const fetchSubmissions = async () => {
     try {
@@ -316,6 +352,138 @@ export default function SubmissionHistory() {
                                   {submission.capability_analysis.feasibility_summary}
                                 </p>
 
+                                {/* Risk Flags */}
+                                {submission.capability_analysis.risk_flags && 
+                                 submission.capability_analysis.risk_flags.length > 0 && (
+                                  <div className="space-y-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded">
+                                    <div className="text-xs font-medium text-amber-800 dark:text-amber-200 uppercase tracking-wider flex items-center gap-1">
+                                      <AlertCircle className="h-3 w-3" />
+                                      Risk Factors
+                                    </div>
+                                    <ul className="text-sm space-y-1">
+                                      {submission.capability_analysis.risk_flags.map((flag: string, i: number) => (
+                                        <li key={i} className="text-amber-800 dark:text-amber-200">
+                                          {flag}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+
+                                {/* Material Difficulty */}
+                                {submission.capability_analysis.material_difficulty && 
+                                 submission.capability_analysis.material_difficulty.difficulty_level !== 'Standard' && (
+                                  <div className="space-y-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded">
+                                    <div className="text-xs font-medium text-blue-800 dark:text-blue-200 uppercase tracking-wider">
+                                      Material: {submission.capability_analysis.material_difficulty.material} 
+                                      ({submission.capability_analysis.material_difficulty.difficulty_level})
+                                    </div>
+                                    {submission.capability_analysis.material_difficulty.flags.length > 0 && (
+                                      <ul className="text-sm space-y-1">
+                                        {submission.capability_analysis.material_difficulty.flags.map((flag: string, i: number) => (
+                                          <li key={i} className="flex items-start gap-2 text-blue-800 dark:text-blue-200">
+                                            <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                                            {flag}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Cost & Lead Time Estimates */}
+                                {submission.review_status !== 'insufficient_data' && 
+                                 (submission.capability_analysis.cost_estimate || submission.capability_analysis.lead_time_estimate) && (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {/* Cost Estimate */}
+                                    {submission.capability_analysis.cost_estimate && (
+                                      <div className="space-y-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded">
+                                        <div className="text-xs font-medium text-green-800 dark:text-green-200 uppercase tracking-wider">
+                                          Cost Estimate
+                                        </div>
+                                        <div className="space-y-1">
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Material:</span>
+                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.material_cost_per_part}/part</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Machining:</span>
+                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.machining_cost_per_part}/part</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm pt-2 border-t">
+                                            <span className="font-medium">Per Part:</span>
+                                            <span className="font-bold text-green-700 dark:text-green-300">
+                                              ${submission.capability_analysis.cost_estimate.discounted_cost_per_part}
+                                            </span>
+                                          </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span className="font-medium">Total (×{submission.capability_analysis.cost_estimate.quantity}):</span>
+                                            <span className="font-bold text-lg text-green-700 dark:text-green-300">
+                                              ${submission.capability_analysis.cost_estimate.total_estimate.toLocaleString()}
+                                            </span>
+                                          </div>
+                                          <div className="text-xs text-muted-foreground italic mt-1">
+                                            {submission.capability_analysis.cost_estimate.note}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Lead Time Estimate */}
+                                    {submission.capability_analysis.lead_time_estimate && (
+                                      <div className="space-y-2 p-3 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded">
+                                        <div className="text-xs font-medium text-purple-800 dark:text-purple-200 uppercase tracking-wider">
+                                          Lead Time Estimate
+                                        </div>
+                                        <div className="space-y-1">
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Setup:</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.setup_time_min} min</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Run Time:</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.run_time_per_part_min} min/part</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Production:</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.production_days} days</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Queue:</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.queue_days} days</span>
+                                          </div>
+                                          <div className="flex justify-between text-sm pt-2 border-t">
+                                            <span className="font-medium">Total Lead Time:</span>
+                                            <span className="font-bold text-lg text-purple-700 dark:text-purple-300">
+                                              {submission.capability_analysis.lead_time_estimate.total_lead_time_days} days
+                                            </span>
+                                          </div>
+                                          <div className="text-xs text-muted-foreground italic mt-1">
+                                            {submission.capability_analysis.lead_time_estimate.note}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Operations List */}
+                                {submission.capability_analysis.operations_list && 
+                                 submission.capability_analysis.operations_list.length > 0 && (
+                                  <div className="space-y-2">
+                                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                      Operations Matched
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                      {submission.capability_analysis.operations_list.map((op: string, i: number) => (
+                                        <Badge key={i} variant="secondary" className="bg-green-100 dark:bg-green-900">
+                                          ✓ {op}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
                                 {/* Validation Errors - Show for insufficient data */}
                                 {submission.review_status === 'insufficient_data' && 
                                  submission.capability_analysis.validation_errors && 
@@ -476,10 +644,31 @@ export default function SubmissionHistory() {
 
                             {/* Actions */}
                             <div className="flex gap-2 pt-2 border-t">
-                              <Button variant="outline" size="sm">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewDetails(submission);
+                                }}
+                              >
                                 <FileText className="h-4 w-4 mr-2" />
                                 View Details
                               </Button>
+                              {(user?.role === 'admin' || user?.role === 'superadmin') && (
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReanalyze(submission);
+                                  }}
+                                  disabled={reanalyzing === submission.id}
+                                >
+                                  <TrendingUp className="h-4 w-4 mr-2" />
+                                  {reanalyzing === submission.id ? 'Analyzing...' : 'Re-analyze'}
+                                </Button>
+                              )}
                               {submission.drive_link && (
                                 <Button variant="outline" size="sm" asChild>
                                   <a href={submission.drive_link} target="_blank" rel="noopener noreferrer">
@@ -515,6 +704,114 @@ export default function SubmissionHistory() {
           </Button>
         </div>
       </div>
+
+      {/* Details Dialog */}
+      <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-light text-2xl">Quote Request Details</DialogTitle>
+          </DialogHeader>
+          {selectedSubmissionDetails && (
+            <div className="space-y-6 font-sans">
+              {/* Quote Number */}
+              <div className="border-b pb-4">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Quote Number</div>
+                <div className="font-mono text-sm">{selectedSubmissionDetails.quote_number}</div>
+              </div>
+
+              {/* Company & Contact */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Company</div>
+                  <div className="text-sm">{selectedSubmissionDetails.company_name || 'N/A'}</div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Contact Name</div>
+                  <div className="text-sm">{selectedSubmissionDetails.contact_name || 'N/A'}</div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Email</div>
+                  <div className="text-sm">{selectedSubmissionDetails.email || 'N/A'}</div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Phone</div>
+                  <div className="text-sm">{selectedSubmissionDetails.phone || 'N/A'}</div>
+                </div>
+              </div>
+
+              {/* Project Information */}
+              <div className="border-t pt-4">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Project Name</div>
+                <div className="text-sm font-medium mb-3">{selectedSubmissionDetails.project_name}</div>
+                {selectedSubmissionDetails.description && (
+                  <>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Description</div>
+                    <div className="text-sm leading-relaxed">{selectedSubmissionDetails.description}</div>
+                  </>
+                )}
+              </div>
+
+              {/* Materials & Finishes */}
+              <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">Materials</div>
+                  <div className="flex flex-wrap gap-1">
+                    {(selectedSubmissionDetails.materials || []).map((material, i) => (
+                      <span key={i} className="text-xs px-2 py-1 bg-muted rounded">{material}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">Finishes</div>
+                  <div className="flex flex-wrap gap-1">
+                    {(selectedSubmissionDetails.finishes || []).map((finish, i) => (
+                      <span key={i} className="text-xs px-2 py-1 bg-muted rounded">{finish}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quantity & Timeline */}
+              <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Quantity</div>
+                  <div className="text-sm">{selectedSubmissionDetails.quantity}</div>
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Lead Time</div>
+                  <div className="text-sm">{selectedSubmissionDetails.lead_time || 'N/A'}</div>
+                </div>
+              </div>
+
+              {/* Part Notes */}
+              {selectedSubmissionDetails.part_notes && (
+                <div className="border-t pt-4">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Part Notes</div>
+                  <div className="text-sm leading-relaxed">{selectedSubmissionDetails.part_notes}</div>
+                </div>
+              )}
+
+              {/* Certifications */}
+              {selectedSubmissionDetails.certifications && selectedSubmissionDetails.certifications.length > 0 && (
+                <div className="border-t pt-4">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">Certifications</div>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedSubmissionDetails.certifications.map((cert, i) => (
+                      <span key={i} className="text-xs px-2 py-1 bg-muted rounded">{cert}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Submission Date */}
+              <div className="border-t pt-4">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">Submitted</div>
+                <div className="text-sm">{formatDate(selectedSubmissionDetails.created_at)}</div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

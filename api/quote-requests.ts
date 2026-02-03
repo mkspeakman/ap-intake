@@ -147,8 +147,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const result = await sql`
-        SELECT * FROM quote_requests 
-        ORDER BY created_at DESC
+        SELECT 
+          qr.*,
+          COALESCE(
+            (SELECT json_agg(m.name) 
+             FROM quote_materials qm 
+             JOIN materials m ON qm.material_id = m.id 
+             WHERE qm.quote_request_id = qr.id), 
+            '[]'::json
+          ) as materials,
+          COALESCE(
+            (SELECT json_agg(f.name) 
+             FROM quote_finishes qf 
+             JOIN finishes f ON qf.finish_id = f.id 
+             WHERE qf.quote_request_id = qr.id), 
+            '[]'::json
+          ) as finishes,
+          COALESCE(
+            (SELECT json_agg(c.code) 
+             FROM quote_certifications qc 
+             JOIN certifications c ON qc.certification_id = c.id 
+             WHERE qc.quote_request_id = qr.id), 
+            '[]'::json
+          ) as certifications
+        FROM quote_requests qr
+        ORDER BY qr.created_at DESC
       `;
 
       return res.json({

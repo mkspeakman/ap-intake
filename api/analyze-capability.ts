@@ -212,6 +212,8 @@ async function matchEquipmentToJob(requirements: JobRequirements, availableEquip
     total_operations_required: requiredOperations.length,
     operations_matched: matchedOperations.size,
     operations_outsourced: outsourcedSteps.length,
+    operations_list: Array.from(matchedOperations),
+    outsourced_operations_list: outsourcedSteps,
     material_compatibility: matches.some(m => m.matched_materials.length > 0),
     tolerance_achievable: true,
     estimated_setup_time_min: matches[0]?.match_score > 0 
@@ -219,12 +221,17 @@ async function matchEquipmentToJob(requirements: JobRequirements, availableEquip
       : undefined,
     recommended_sequence: matches.slice(0, 3).map(m => m.name),
     confidence_score: matches.length > 0 ? Math.round(matches[0].match_score) : 0,
+    // NEW: Cost and lead time estimates
+    cost_estimate: calculateCostEstimate(requirements, matches, availableEquipment),
+    lead_time_estimate: calculateLeadTime(requirements, matches, availableEquipment),
+    material_difficulty: assessMaterialDifficulty(requirements.materials),
+    risk_flags: generateRiskFlags(requirements, matches),
     analysis_timestamp: new Date().toISOString(),
   };
 
   return {
     feasibility,
-    matches: matches.slice(0, 5),
+    matches: matches.slice(0, 12), // Show all matched machines
     outsourcedSteps,
     analysis,
   };
@@ -292,6 +299,181 @@ function generateFeasibilitySummary(
   } else {
     return `❌ Cannot be manufactured in-house. Recommend vendor network.`;
   }
+}
+
+/**
+ * Calculate cost estimate based on material, operations, and quantity
+ */
+function calculateCostEstimate(requirements: JobRequirements, matches: any[], equipment: EquipmentData[]) {
+  if (matches.length === 0) return null;
+
+  // Material cost estimates ($/lb)
+  const materialCosts: Record<string, number> = {
+    'aluminum': 3,
+    '6061': 3,
+    '7075': 5,
+    'steel': 2,
+    'stainless': 8,
+    '304': 8,
+    '316': 10,
+    'titanium': 40,
+    'ti-6al-4v': 45,
+    'inconel': 60,
+    'copper': 8,
+    'brass': 6,
+  };
+
+  // Estimate material cost (assuming 1lb per part as baseline)
+  let materialCostPerPart = 5; // default
+  for (const mat of requirements.materials) {
+    for (const [key, cost] of Object.entries(materialCosts)) {
+      if (mat.toLowerCase().includes(key)) {
+        materialCostPerPart = cost;
+        break;
+      }
+    }
+  }
+
+  // Get machine hourly rate
+  const topMachine = equipment.find(e => e.machine_id === matches[0].machine_id);
+  const hourlyRate = topMachine?.estimated_hourly_rate_usd || 150;
+
+  // Estimate machining time (hours) - very rough estimate
+  const operationCount = requirements.operations?.length || 2;
+  const machiningHours = operationCount * 0.5; // 30 min per operation
+  const setupHours = (topMachine?.setup_time_min || 45) / 60;
+
+  const machiningCost = (setupHours + machiningHours) * hourlyRate;
+  const totalCostPerPart = materialCostPerPart + machiningCost;
+
+  // Quantity discounts
+  const quantity = parseInt(requirements.quantity?.toString() || '1');
+  const setupCostPerPart = (setupHours * hourlyRate) / Math.max(quantity, 1);
+  const discountedCost = materialCostPerPart + ((machiningHours * hourlyRate) + setupCostPerPart);
+
+  return {
+    material_cost_per_part: Math.round(materialCostPerPart),
+    machining_cost_per_part: Math.round(machiningCost),
+    total_cost_per_part: Math.round(totalCostPerPart),
+    discounted_cost_per_part: Math.round(discountedCost),
+    quantity: quantity,
+    total_estimate: Math.round(discountedCost * quantity),
+    currency: 'USD',
+    note: 'Rough estimate - requires engineering review',
+  };
+}
+
+/**
+ * Calculate lead time estimate
+ */
+function calculateLeadTime(requirements: JobRequirements, matches: any[], equipment: EquipmentData[]) {
+  if (matches.length === 0) return null;
+
+  const topMachine = equipment.find(e => e.machine_id === matches[0].machine_id);
+  const setupMin = topMachine?.setup_time_min || 45;
+  const operationCount = requirements.operations?.length || 2;
+  const runTimePerPartMin = operationCount * 30; // 30 min per operation
+  const quantity = parseInt(requirements.quantity?.toString() || '1');
+
+  const totalProductionMin = setupMin + (runTimePerPartMin * quantity);
+  const totalProductionHours = Math.ceil(totalProductionMin / 60);
+  const productionDays = Math.ceil(totalProductionHours / 8); // 8 hour days
+
+  // Add queue time (3-5 days typical)
+  const queueDays = 4;
+  const totalDays = productionDays + queueDays;
+
+  return {
+    setup_time_min: setupMin,
+    run_time_per_part_min: runTimePerPartMin,
+    total_production_hours: totalProductionHours,
+    production_days: productionDays,
+    queue_days: queueDays,
+    total_lead_time_days: totalDays,
+    note: 'Estimate based on current capacity - subject to schedule',
+  };
+}
+
+/**
+ * Assess material difficulty
+ */
+function assessMaterialDifficulty(materials: string[]) {
+  const difficulties: Record<string, { level: string; flags: string[] }> = {
+    'titanium': {
+      level: 'Difficult',
+      flags: ['Requires carbide tooling', 'Low cutting speeds (50-100 SFM)', 'High-pressure coolant recommended', 'Expensive material - high scrap risk'],
+    },
+    'ti-6al-4v': {
+      level: 'Difficult',
+      flags: ['Aerospace grade titanium', 'Requires special fixtures', 'High tool wear', 'Certification may be required'],
+    },
+    'inconel': {
+      level: 'Exotic',
+      flags: ['Extreme work hardening', 'Very low cutting speeds', 'Ceramic or CBN tooling', 'Extremely expensive'],
+    },
+    'stainless': {
+      level: 'Moderate',
+      flags: ['Work hardening material', 'Sharp tooling required', 'Good coolant flow needed'],
+    },
+    '316': {
+      level: 'Moderate',
+      flags: ['Austenitic stainless', 'Work hardening', 'Chip control important'],
+    },
+    'aluminum': { level: 'Standard', flags: [] },
+    '6061': { level: 'Standard', flags: ['Easy to machine', 'Good surface finish'] },
+    '7075': { level: 'Standard', flags: ['Harder than 6061', 'Good for structural parts'] },
+    'steel': { level: 'Standard', flags: [] },
+    'copper': { level: 'Standard', flags: ['Soft material', 'Excellent thermal properties'] },
+    'brass': { level: 'Standard', flags: ['Easy to machine', 'Good for threading'] },
+  };
+
+  for (const mat of materials) {
+    for (const [key, value] of Object.entries(difficulties)) {
+      if (mat.toLowerCase().includes(key)) {
+        return {
+          material: mat,
+          difficulty_level: value.level,
+          flags: value.flags,
+        };
+      }
+    }
+  }
+
+  return {
+    material: materials[0] || 'Unknown',
+    difficulty_level: 'Standard',
+    flags: [],
+  };
+}
+
+/**
+ * Generate risk flags
+ */
+function generateRiskFlags(requirements: JobRequirements, matches: any[]) {
+  const flags: string[] = [];
+
+  // Material difficulty
+  const matDiff = assessMaterialDifficulty(requirements.materials);
+  if (matDiff.difficulty_level === 'Difficult' || matDiff.difficulty_level === 'Exotic') {
+    flags.push(`⚠️ ${matDiff.difficulty_level} material: ${matDiff.material}`);
+  }
+
+  // Certifications
+  if (requirements.certifications && requirements.certifications.length > 0) {
+    flags.push(`📋 Certifications required: ${requirements.certifications.join(', ')}`);
+  }
+
+  // Low confidence
+  if (matches.length > 0 && matches[0].match_score < 70) {
+    flags.push('⚠️ Low confidence match - manual review recommended');
+  }
+
+  // No matches
+  if (matches.length === 0) {
+    flags.push('❌ No in-house capability - vendor sourcing required');
+  }
+
+  return flags;
 }
 
 /**
