@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverTrigger, PopoverContent, PopoverOverlay } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getMachineSpritePosition, hasMachineSprite } from '@/lib/machine-sprite';
+import { getMachineImage, hasMachineImage } from '@/lib/machine-sprite';
 import { 
   Search, 
   Filter, 
@@ -533,24 +533,20 @@ export default function SubmissionHistory() {
                                        {highConfidence.length > 0 && (
                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                            {highConfidence.map((match, i) => {
-                                             const spritePosition = getMachineSpritePosition(match.machine_id);
-                                             const hasSprite = hasMachineSprite(match.machine_id);
+                                             const machineImage = getMachineImage(match.machine_id);
+                                             const hasImage = hasMachineImage(match.machine_id);
                                              
                                              return (
                                                <div 
                                                  key={i}
                                                  className="flex items-start gap-3 p-3 bg-muted/50 rounded border border-border/50 hover:border-border transition-colors"
                                                >
-                                                 {/* Machine Image from Sprite */}
-                                                 {hasSprite && spritePosition && (
-                                                   <div 
-                                                     className="flex-shrink-0 w-32 h-32 rounded border border-border bg-white"
-                                                     style={{
-                                                       backgroundImage: 'url(/equipment/machines-sprite.jpg)',
-                                                       backgroundSize: '600% 200%',
-                                                       backgroundPosition: spritePosition,
-                                                       backgroundRepeat: 'no-repeat'
-                                                     }}
+                                                 {/* Machine Image */}
+                                                 {hasImage && machineImage && (
+                                                   <img 
+                                                     src={machineImage}
+                                                     alt={match.name}
+                                                     className="flex-shrink-0 w-32 h-32 rounded border border-border bg-white object-contain p-2"
                                                    />
                                                  )}
                                                  

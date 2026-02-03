@@ -1,52 +1,71 @@
 /**
- * Machine sprite sheet mapping
- * Sprite layout: 6 columns × 2 rows
+ * Machine image mapping - individual images
  */
 
-export interface SpritePosition {
-  col: number; // 0-5
-  row: number; // 0-1
-}
-
-const SPRITE_MAP: Record<string, SpritePosition> = {
-  // Row 1
-  'DNM_4500_001': { col: 0, row: 0 },
-  'DNM_4500_002': { col: 0, row: 0 }, // Same machine
-  'VF2SS_001': { col: 1, row: 0 },
-  'VF2SS_5AXIS_001': { col: 2, row: 0 },
-  'OKUMA_MB4000H_001': { col: 3, row: 0 },
-  'PUMA_2100SY_001': { col: 4, row: 0 },
-  'UMC750_001': { col: 5, row: 0 },
+const MACHINE_IMAGE_MAP: Record<string, string> = {
+  // DNM 4500
+  'DNM_4500_001': '/equipment/dnm-4500.jpg',
+  'DNM_4500_002': '/equipment/dnm-4500.jpg',
   
-  // Row 2
-  'ST10_001': { col: 0, row: 1 },
-  'ST10_002': { col: 0, row: 1 }, // Same machine
-  'INTEGREX_200Y_001': { col: 1, row: 1 },
-  'SPEEDIO_S700X1_001': { col: 2, row: 1 },
-  'MAKINO_EDGE3_001': { col: 3, row: 1 },
+  // Haas VF-2SS
+  'HAAS_VF2SS_001': '/equipment/haas-vf2ss.jpg',
+  
+  // Haas VF-2SS 5-Axis
+  'HAAS_VF2SS_5X_001': '/equipment/haas-vf2ss-5axis.jpg',
+  
+  // Haas DT-1
+  'HAAS_DT1_001': '/equipment/haas-vf2ss.jpg', // Using VF2SS as placeholder
+  
+  // Haas Super Mini-Mills
+  'HAAS_MINIMILL_001': '/equipment/haas-vf2ss.jpg',
+  'HAAS_MINIMILL_002': '/equipment/haas-vf2ss.jpg',
+  'HAAS_MINIMILL_003': '/equipment/haas-vf2ss.jpg',
+  
+  // Okuma MB-4000H
+  'OKUMA_MB4000H_001': '/equipment/okuma-mb4000h.jpg',
+  
+  // Doosan Puma 2100SY
+  'DOOSAN_PUMA2100SY_001': '/equipment/doosan-puma-2100sy.jpg',
+  
+  // Haas UMC-750 Gen 1
+  'HAAS_UMC750_001': '/equipment/haas-umc750-gen1.jpg',
+  
+  // Haas UMC-750 Gen 2
+  'HAAS_UMC750_002': '/equipment/haas-umc750-gen2.jpg',
+  
+  // Haas ST-10
+  'HAAS_ST10_001': '/equipment/haas-st10.jpg',
+  'HAAS_ST10_002': '/equipment/haas-st10.jpg',
+  
+  // Mazak Integrex 200Y
+  'MAZAK_INTEGREX200Y_001': '/equipment/mazak-integrex-200y.jpg',
+  
+  // Brother Speedio
+  'BROTHER_SPEEDIO_001': '/equipment/brother-speedio.jpg',
+  
+  // Makino Wire EDM
+  'MAKINO_EDGE3_001': '/equipment/makino-wire-edm.jpg',
+  
+  // Makino Sinker EDM
+  'MAKINO_SINKER_001': '/equipment/makino-sinker-edm.jpg',
 };
 
 /**
- * Get CSS background-position for a machine sprite
+ * Get machine image URL
  * @param machineId - The machine_id from the database
- * @returns CSS background-position string or null if not found
+ * @returns Image URL or null if not found
  */
-export function getMachineSpritePosition(machineId: string): string | null {
-  const position = SPRITE_MAP[machineId];
-  if (!position) return null;
-  
-  // Calculate percentage position
-  // 6 columns means each is 20% wide (100% / 5 steps between 0-100)
-  // 2 rows means each is 100% tall (100% / 1 step between 0-100)
-  const xPercent = position.col * 20;
-  const yPercent = position.row * 100;
-  
-  return `${xPercent}% ${yPercent}%`;
+export function getMachineImage(machineId: string): string | null {
+  return MACHINE_IMAGE_MAP[machineId] || null;
 }
 
 /**
- * Check if a machine has a sprite image
+ * Check if a machine has an image
  */
-export function hasMachineSprite(machineId: string): boolean {
-  return machineId in SPRITE_MAP;
+export function hasMachineImage(machineId: string): boolean {
+  return machineId in MACHINE_IMAGE_MAP;
 }
+
+// Legacy exports for backward compatibility
+export const getMachineSpritePosition = getMachineImage;
+export const hasMachineSprite = hasMachineImage;
