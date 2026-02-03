@@ -372,18 +372,17 @@ export default function SubmissionHistory() {
 
                                 {/* Material Difficulty */}
                                 {submission.capability_analysis.material_difficulty && 
-                                 submission.capability_analysis.material_difficulty.difficulty_level !== 'Standard' && (
+                                 submission.capability_analysis.material_difficulty.classification !== 'Standard' && (
                                   <div className="space-y-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded">
                                     <div className="text-xs font-medium text-blue-800 dark:text-blue-200 uppercase tracking-wider">
-                                      Material: {submission.capability_analysis.material_difficulty.material} 
-                                      ({submission.capability_analysis.material_difficulty.difficulty_level})
+                                      Material Difficulty: {submission.capability_analysis.material_difficulty.classification}
                                     </div>
-                                    {submission.capability_analysis.material_difficulty.flags.length > 0 && (
+                                    {submission.capability_analysis.material_difficulty.concerns.length > 0 && (
                                       <ul className="text-sm space-y-1">
-                                        {submission.capability_analysis.material_difficulty.flags.map((flag: string, i: number) => (
+                                        {submission.capability_analysis.material_difficulty.concerns.map((concern: string, i: number) => (
                                           <li key={i} className="flex items-start gap-2 text-blue-800 dark:text-blue-200">
                                             <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
-                                            {flag}
+                                            {concern}
                                           </li>
                                         ))}
                                       </ul>
@@ -404,26 +403,36 @@ export default function SubmissionHistory() {
                                         <div className="space-y-1">
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Material:</span>
-                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.material_cost_per_part}/part</span>
+                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.material_cost.toFixed(2)}</span>
                                           </div>
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Machining:</span>
-                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.machining_cost_per_part}/part</span>
+                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.machining_cost.toFixed(2)}</span>
                                           </div>
+                                          <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Setup:</span>
+                                            <span className="font-medium">${submission.capability_analysis.cost_estimate.setup_cost.toFixed(2)}</span>
+                                          </div>
+                                          {submission.capability_analysis.cost_estimate.outsourcing_cost > 0 && (
+                                            <div className="flex justify-between text-sm">
+                                              <span className="text-muted-foreground">Outsourcing:</span>
+                                              <span className="font-medium">${submission.capability_analysis.cost_estimate.outsourcing_cost.toFixed(2)}</span>
+                                            </div>
+                                          )}
                                           <div className="flex justify-between text-sm pt-2 border-t">
                                             <span className="font-medium">Per Part:</span>
                                             <span className="font-bold text-green-700 dark:text-green-300">
-                                              ${submission.capability_analysis.cost_estimate.discounted_cost_per_part}
+                                              ${submission.capability_analysis.cost_estimate.per_unit_cost.toFixed(2)}
                                             </span>
                                           </div>
-                                          <div className="flex justify-between text-sm">
-                                            <span className="font-medium">Total (×{submission.capability_analysis.cost_estimate.quantity}):</span>
+                                          <div className="flex justify-between text-sm pt-2 border-t">
+                                            <span className="font-medium">Total Cost:</span>
                                             <span className="font-bold text-lg text-green-700 dark:text-green-300">
-                                              ${submission.capability_analysis.cost_estimate.total_estimate.toLocaleString()}
+                                              ${submission.capability_analysis.cost_estimate.total_cost.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                             </span>
                                           </div>
                                           <div className="text-xs text-muted-foreground italic mt-1">
-                                            {submission.capability_analysis.cost_estimate.note}
+                                            Confidence: {submission.capability_analysis.cost_estimate.confidence_level}
                                           </div>
                                         </div>
                                       </div>
@@ -438,11 +447,7 @@ export default function SubmissionHistory() {
                                         <div className="space-y-1">
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Setup:</span>
-                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.setup_time_min} min</span>
-                                          </div>
-                                          <div className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground">Run Time:</span>
-                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.run_time_per_part_min} min/part</span>
+                                            <span className="font-medium">{submission.capability_analysis.lead_time_estimate.setup_days} days</span>
                                           </div>
                                           <div className="flex justify-between text-sm">
                                             <span className="text-muted-foreground">Production:</span>
@@ -455,12 +460,14 @@ export default function SubmissionHistory() {
                                           <div className="flex justify-between text-sm pt-2 border-t">
                                             <span className="font-medium">Total Lead Time:</span>
                                             <span className="font-bold text-lg text-purple-700 dark:text-purple-300">
-                                              {submission.capability_analysis.lead_time_estimate.total_lead_time_days} days
+                                              {submission.capability_analysis.lead_time_estimate.total_days} days
                                             </span>
                                           </div>
-                                          <div className="text-xs text-muted-foreground italic mt-1">
-                                            {submission.capability_analysis.lead_time_estimate.note}
-                                          </div>
+                                          {submission.capability_analysis.lead_time_estimate.expedite_possible && (
+                                            <div className="text-xs text-green-600 dark:text-green-400 italic mt-1">
+                                              ⚡ Expedite available: {submission.capability_analysis.lead_time_estimate.expedite_days} days
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     )}
