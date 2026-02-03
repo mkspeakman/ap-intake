@@ -534,8 +534,24 @@ export default function SubmissionHistory() {
                                            {highConfidence.map((match, i) => (
                                              <div 
                                                key={i}
-                                               className="flex items-start justify-between p-3 bg-muted/50 rounded border border-border/50 hover:border-border transition-colors"
+                                               className="flex items-start gap-3 p-3 bg-muted/50 rounded border border-border/50 hover:border-border transition-colors"
                                              >
+                                               {/* Machine Image */}
+                                               {match.image_url && (
+                                                 <div className="flex-shrink-0">
+                                                   <img 
+                                                     src={match.image_url} 
+                                                     alt={match.name}
+                                                     className="w-32 h-32 object-cover rounded border border-border bg-white"
+                                                     onError={(e) => {
+                                                       // Hide image on error
+                                                       e.currentTarget.style.display = 'none';
+                                                     }}
+                                                   />
+                                                 </div>
+                                               )}
+                                               
+                                               {/* Machine Info */}
                                                <div className="flex-1 min-w-0">
                                                  <div className="font-medium text-sm truncate">
                                                    {match.name}
@@ -549,6 +565,8 @@ export default function SubmissionHistory() {
                                                    </div>
                                                  )}
                                                </div>
+                                               
+                                               {/* Confidence Score */}
                                                <div className="flex flex-col items-end ml-3 flex-shrink-0">
                                                  <div className="flex items-center gap-1">
                                                    <TrendingUp className="h-3 w-3 text-green-600" />

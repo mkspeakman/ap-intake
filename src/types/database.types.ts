@@ -44,6 +44,7 @@ export interface MachineMatch {
   matched_operations: string[];
   matched_materials: string[];
   notes?: string;
+  image_url?: string;
 }
 
 export interface CapabilityAnalysis {
