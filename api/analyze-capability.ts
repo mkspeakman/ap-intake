@@ -135,7 +135,6 @@ async function fetchEquipmentWithCapabilities(): Promise<EquipmentData[]> {
       e.min_tolerance_mm,
       e.setup_time_min,
       e.estimated_hourly_rate_usd,
-      e.image_url,
       array_agg(DISTINCT eo.operation) FILTER (WHERE eo.operation IS NOT NULL) as operations,
       array_agg(DISTINCT m.name) FILTER (WHERE m.name IS NOT NULL) as materials,
       array_agg(DISTINCT ep.preference) FILTER (WHERE ep.preference IS NOT NULL) as preferred_for
@@ -179,7 +178,6 @@ async function matchEquipmentToJob(requirements: JobRequirements, availableEquip
         matched_operations: score.matchedOps,
         matched_materials: score.matchedMats,
         notes: score.notes,
-        image_url: machine.image_url,
       });
 
       score.matchedOps.forEach((op: string) => matchedOperations.add(op));
