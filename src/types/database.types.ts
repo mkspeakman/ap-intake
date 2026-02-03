@@ -58,6 +58,34 @@ export interface CapabilityAnalysis {
   confidence_score?: number;
   analysis_timestamp: string;
   validation_errors?: string[];
+  
+  // Enhanced Business Intelligence Fields
+  cost_estimate?: {
+    total_cost: number;
+    material_cost: number;
+    machining_cost: number;
+    setup_cost: number;
+    outsourcing_cost: number;
+    per_unit_cost: number;
+    confidence_level: 'low' | 'medium' | 'high';
+  };
+  lead_time_estimate?: {
+    total_days: number;
+    setup_days: number;
+    production_days: number;
+    queue_days: number;
+    expedite_possible: boolean;
+    expedite_days?: number;
+  };
+  material_difficulty?: {
+    classification: 'Standard' | 'Moderate' | 'Difficult' | 'Exotic';
+    concerns: string[];
+    requires_special_tooling: boolean;
+    machinability_rating?: string;
+  };
+  risk_flags?: string[];
+  operations_list?: string[];
+  outsourced_operations_list?: string[];
 }
 
 export interface QuoteFile {
