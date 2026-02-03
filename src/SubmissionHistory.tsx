@@ -377,7 +377,7 @@ export default function SubmissionHistory() {
                                     <div className="text-xs font-medium text-blue-800 dark:text-blue-200 uppercase tracking-wider">
                                       Material Difficulty: {submission.capability_analysis.material_difficulty.classification}
                                     </div>
-                                    {submission.capability_analysis.material_difficulty.concerns.length > 0 && (
+                                    {submission.capability_analysis.material_difficulty.concerns && submission.capability_analysis.material_difficulty.concerns.length > 0 && (
                                       <ul className="text-sm space-y-1">
                                         {submission.capability_analysis.material_difficulty.concerns.map((concern: string, i: number) => (
                                           <li key={i} className="flex items-start gap-2 text-blue-800 dark:text-blue-200">
