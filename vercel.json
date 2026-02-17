@@ -4,7 +4,7 @@
   "installCommand": "npm install",
   "rewrites": [
     {
-      "source": "/((?!api).*)",
+      "source": "/((?!api|email-templates).*)",
       "destination": "/index.html"
     }
   ],
