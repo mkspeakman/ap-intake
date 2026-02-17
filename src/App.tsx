@@ -9,11 +9,10 @@ import { SubmissionDialog } from '@/components/SubmissionDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import type { FileUploadItemData } from '@/components/form-sections/FileUploadItem';
 
-// Use proxy path for local development to avoid CORS issues
-// In production (Vercel), use Vercel serverless function
+// Send directly to n8n to avoid Vercel's body size limits
 const WEBHOOK_URL = import.meta.env.DEV 
   ? '/api'
-  : '/api/webhook';
+  : 'https://speakhost.app.n8n.cloud/webhook/project-submission';
 
 export default function ManufacturingIntakeForm() {
   const { user, isAuthenticated } = useAuth();
