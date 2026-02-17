@@ -31,6 +31,7 @@ See [Local Development Guide](./LOCAL_DEVELOPMENT.md) for detailed setup.
 - **Role-Based Access Control (RBAC)** - 5 user roles with granular permissions
 - **User Authentication** - Secure login with JWT-like token authentication
 - **File Upload** - Multi-file upload with progress tracking to Google Drive
+- **Email Notifications** - Professional HTML email templates for quote notifications
 - **Real-time Processing** - N8N webhook integration for automated workflows
 - **Equipment Matching** - AI-powered capability analysis and machine matching
 - **Cost Estimation** - Automated material and machining cost calculations
@@ -243,6 +244,14 @@ ap-intake/
 │   ├── add-test-user-flag.sql # Test user management
 │   ├── add-capability-fields.sql # Equipment matching
 │   └── insert-equipment-postgres.sql # Equipment seed data
+├── email-templates/         # Notification email templates
+│   ├── quote-notification.html  # Responsive HTML template
+│   ├── quote-notification.txt   # Plain text version
+│   ├── sample-data.json         # Example template data
+│   ├── generate-preview.js      # Preview generator script
+│   ├── test-template.js         # Template validation script
+│   ├── n8n-integration-example.js # n8n integration guide
+│   └── README.md                # Full documentation
 └── vercel.json             # Vercel configuration
 ```
 
@@ -279,6 +288,41 @@ ap-intake/
 - `GET /api/equipment` - List all equipment
 - `POST /api/analyze-capability` - Analyze manufacturing requirements
   - Body: `{ quoteRequestId }`
+
+## 📧 Email Notifications
+
+Professional HTML email templates are available for notifying Autopilot when new quote requests are submitted.
+
+**Templates included:**
+- `email-templates/quote-notification.html` - Responsive HTML email
+- `email-templates/quote-notification.txt` - Plain text version
+- `email-templates/sample-data.json` - Example data for testing
+
+**Quick start:**
+```bash
+cd email-templates
+
+# Generate preview with sample data
+node generate-preview.js
+# Opens preview.html in your browser
+
+# Test template validation
+node test-template.js
+```
+
+**Email client compatibility:**
+- ✅ Gmail, Apple Mail, Outlook 2016+
+- ✅ Mobile responsive design
+- ✅ Dark mode support
+- ✅ Table-based layout for maximum compatibility
+
+**Integration options:**
+- n8n workflow (recommended)
+- SendGrid API
+- AWS SES
+- Nodemailer
+
+See [email-templates/README.md](./email-templates/README.md) for full documentation and integration examples.
 
 ## 🧪 Test Data Management
 

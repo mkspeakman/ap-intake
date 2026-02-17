@@ -1,0 +1,15 @@
+{
+  "logoUrl": "https://ap-intake-production.vercel.app/favicon-32x32.png",
+  "dateSubmitted": "Tue Feb 17 8:55AM",
+  "quoteNumber": "QR-20260204-ZA98",
+  "summaryLink": "https://drive.google.com/file/d/xxx/summary.md",
+  "uploadedFilesText": "[A: example if no files were uploaded: Uploaded Files: None]",
+  "uploadedFilesTextAlt": "[B: example if uploaded files exist: Uploaded Files: PDF(1), STEP(2)]",
+  "projectName": "SC-006 Crank Knob Rev A",
+  "companyName": "{{Company Name}}",
+  "contactName": "{{Contact Name}}",
+  "email": "{{email@addressdomain.com}}",
+  "phone": "4065797906",
+  "description": "5000 units requiring milling and drilling. Expected to be fully manufacturable in-house with Autopilot capabilities. Risk factors include difficult material, Titanium Ti-6AL-4V, and tight tolerances.",
+  "driveLink": "https://drive.google.com/drive/folders/xxx"
+}

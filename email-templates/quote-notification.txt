@@ -1,0 +1,28 @@
+AP-AI
+NEW QUOTE REQUEST RECEIVED
+================================
+
+Date Submitted: {{dateSubmitted}}
+Quote Number: {{quoteNumber}}
+Summary: {{summaryLink}}
+
+{{uploadedFilesText}}
+
+PROJECT DETAILS
+================================
+
+Project Name: {{projectName}}
+
+Company: {{companyName}}
+Contact Name: {{contactName}}
+Email: {{email}}
+Phone: {{phone}}
+
+{{description}}
+
+VIEW PROJECT FILES
+================================
+{{driveLink}}
+
+---
+This is an automated notification from the AP-AI Manufacturing Quote Request System.
