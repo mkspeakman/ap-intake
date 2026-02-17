@@ -36,9 +36,9 @@ export function FinishRequirementsSection({
   return (
     <div className="space-y-4">
       <div>
-        <Label>Select Finish(es)</Label>
+        <Label htmlFor="finishes">Select Finish(es)</Label>
         <Select onValueChange={onFinishAdd}>
-          <SelectTrigger>
+          <SelectTrigger id="finishes">
             <SelectValue placeholder="Select finishes..." />
           </SelectTrigger>
           <SelectContent>
@@ -78,6 +78,7 @@ export function FinishRequirementsSection({
             placeholder="e.g., Nickel Plating"
             value={customFinish}
             onChange={onCustomFinishChange}
+            autoComplete="off"
           />
           <Button type="button" onClick={onCustomFinishAdd} variant="outline">
             Add

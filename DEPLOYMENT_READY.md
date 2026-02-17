@@ -77,7 +77,7 @@
 ### Known Considerations
 - **Password hashing:** Currently using plain text in schema - implement bcrypt for production
 - **Local development:** Use `vercel dev` for full database access, or `npm run dev` with mock data
-- **Authentication:** Mock credentials for local dev (test@example.com / password)
+- **Authentication:** Database credentials (admin@example.com / password123)
 
 ## 📊 Bundle Analysis
 - Main bundle: 368KB (115KB gzipped)

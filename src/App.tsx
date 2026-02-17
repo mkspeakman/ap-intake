@@ -423,7 +423,7 @@ export default function ManufacturingIntakeForm() {
             />
 
             {/* Extra space to clear the fixed footer */}
-            <div className="h-24"></div>
+            <div className="h-32"></div>
           </form>
         </CardContent>
       </Card>

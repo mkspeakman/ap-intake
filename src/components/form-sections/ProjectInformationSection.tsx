@@ -83,6 +83,7 @@ export function ProjectInformationSection({
             value={projectName}
             onChange={onChange}
             required
+            autoComplete="off"
             className="mt-2"
           />
         </div>
@@ -113,6 +114,9 @@ export function ProjectInformationSection({
         </div>
 
         <div>
+          <Label htmlFor="description" className="text-sm font-medium">
+            Description
+          </Label>
           <Textarea
             id="description"
             name="description"
@@ -121,7 +125,8 @@ export function ProjectInformationSection({
             value={description}
             onChange={onChange}
             disabled={generateSummary}
-            className="resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+            autoComplete="off"
+            className="resize-none disabled:opacity-50 disabled:cursor-not-allowed mt-1.5"
           />
         </div>
       </div>

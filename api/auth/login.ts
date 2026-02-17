@@ -30,14 +30,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Check if running locally without database connection
     if (!process.env.POSTGRES_URL) {
+      console.log('[Local Dev] No database connection');
+      console.log('[Local Dev] Use credentials: admin@example.com / password123');
+      
       // Return mock user for local development
-      if (email === 'test@example.com' && password === 'password') {
+      if (email === 'admin@example.com' && password === 'password123') {
         return res.json({
           success: true,
           user: {
             id: 1,
-            email: 'test@example.com',
-            name: 'Test User',
+            email: 'admin@example.com',
+            name: 'Admin User',
             role: 'admin',
             can_view_history: true,
             permissions: {
@@ -46,7 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           }
         });
       }
-      return res.status(401).json({ success: false, error: 'Invalid credentials' });
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Local dev: Use admin@example.com / password123' 
+      });
     }
 
     // Query user from database
@@ -57,6 +63,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       LIMIT 1
     `;
 
+    console.log(`[Login Attempt] Email: ${email}, Found: ${result.rows.length > 0}`);
+
     if (result.rows.length === 0) {
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
@@ -66,8 +74,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // TODO: In production, use bcrypt to compare hashed passwords
     // For now, doing simple comparison (INSECURE - only for initial setup)
     if (user.password_hash !== password) {
+      console.log(`[Login Failed] Password mismatch for ${email}`);
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
+
+    console.log(`[Login Success] User ${email} logged in with role: ${user.role}`);
 
     // Return user data (without password)
     return res.json({

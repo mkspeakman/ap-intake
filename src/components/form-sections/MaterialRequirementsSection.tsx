@@ -38,9 +38,9 @@ export function MaterialRequirementsSection({
   return (
     <div className="space-y-4">
       <div>
-        <Label>Select Material(s) *</Label>
+        <Label htmlFor="materials">Select Material(s) *</Label>
         <Select onValueChange={onMaterialAdd}>
-          <SelectTrigger>
+          <SelectTrigger id="materials">
             <SelectValue placeholder="Select materials..." />
           </SelectTrigger>
           <SelectContent>
@@ -78,6 +78,7 @@ export function MaterialRequirementsSection({
             id="customMaterial"
             name="customMaterial"
             placeholder="e.g., Inconel 718"
+            autoComplete="off"
             value={customMaterial}
             onChange={onCustomMaterialChange}
           />

@@ -2,6 +2,8 @@
 
 ## Test Date: January 6, 2026
 
+> **Note (Updated Feb 2026):** Legacy test documentation. Port and startup commands have changed. Use `npm start` and access at `http://localhost:3000` for current setup.
+
 ---
 
 ## ✅ Test 1: Direct Webhook Submission

@@ -2,6 +2,26 @@
 
 A modern web application for collecting and managing manufacturing quote requests with user authentication, role-based access control, file uploads, and database integration.
 
+## 🚀 Quick Start
+
+**Two terminals required:**
+
+```bash
+# Terminal 1: API Server
+npm run dev:api
+
+# Terminal 2: Frontend
+npm start
+```
+
+Access at **http://localhost:3000** and login with:
+- **Email:** `admin@example.com`  
+- **Password:** `password123`
+
+See [Local Development Guide](./LOCAL_DEVELOPMENT.md) for detailed setup.
+
+---
+
 ## 🚀 Features
 
 ### Core Functionality
@@ -132,28 +152,25 @@ VALUES
 
 ### Development
 
-**Option 1: Full Stack (Recommended)**
+**Single Command (Recommended)**
 ```bash
-# Terminal 1: Start Vercel serverless functions
-vercel dev
-
-# Terminal 2: Start Vite dev server
-npm run dev
+npm start
+# or: npm run dev:vercel
 ```
-- Vite: http://localhost:5173 (frontend)
-- Vercel: http://localhost:3000 (API proxy)
+- Available at http://localhost:3000
+- Runs both frontend (Vite) and API (Vercel Dev)
 - Full database connectivity
 - Real authentication
 - Complete feature set
 
-**Option 2: Frontend Only (Limited)**
+**Frontend Only (Limited)**
 ```bash
 npm run dev
 ```
-- Available at http://localhost:5173
-- Form submissions work
-- No database features
-- Authentication uses mock data
+- Available at http://localhost:3000 (or next available port)
+- Form submissions work (limited)
+- No API/database features
+- Good for UI development only
 
 ## 🔐 Authentication & Roles
 
@@ -345,12 +362,24 @@ This ensures:
 ## 🧪 Development Commands
 
 ```bash
-npm run dev          # Start Vite dev server (port 5173)
+# Development (requires 2 terminals)
+npm run dev:api     # Terminal 1: API server (port 3001)
+npm start            # Terminal 2: Frontend (port 3000)
+# or: npm run dev
+
+# Production
 npm run build        # Build for production
-npm run preview      # Preview production build
-vercel dev           # Start Vercel serverless (port 3000)
+npm run preview      # Preview production build locally
+npm run lint         # Run ESLint
+
+# Deployment
+vercel deploy        # Deploy to preview
+vercel --prod        # Deploy to production
 vercel logs          # View production logs
 ```
+
+**Login Credentials:**
+- Local/Production: `admin@example.com` / `password123`
 
 ## ✅ Testing
 

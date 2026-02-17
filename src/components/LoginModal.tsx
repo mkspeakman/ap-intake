@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -22,18 +22,22 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     setError('');
     setIsLoading(true);
 
-    const success = await login(email, password);
+    try {
+      const success = await login(email, password);
 
-    if (success) {
-      setEmail('');
-      setPassword('');
-      onClose();
-      window.location.reload(); // Refresh to update UI
-    } else {
-      setError('Invalid email or password');
+      if (success) {
+        setEmail('');
+        setPassword('');
+        onClose();
+        window.location.reload(); // Refresh to update UI
+      } else {
+        setError('Invalid email or password. Try: admin@example.com / password123');
+      }
+    } catch (err) {
+      setError('Login failed. Please check console for details.');
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleClose = () => {
@@ -48,6 +52,9 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>Sign In</DialogTitle>
+          <DialogDescription>
+            Enter your credentials to access your account.
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">

@@ -28,12 +28,13 @@ export function QuantityTimelineSection({
             value={quantity}
             onChange={onQuantityChange}
             required
+            autoComplete="off"
           />
         </div>
         <div>
           <Label htmlFor="leadTime">Required Lead Time</Label>
           <Select value={leadTime} onValueChange={onLeadTimeChange}>
-            <SelectTrigger>
+            <SelectTrigger id="leadTime">
               <SelectValue placeholder="Select lead time..." />
             </SelectTrigger>
             <SelectContent>

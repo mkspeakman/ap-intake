@@ -41,7 +41,7 @@ A **Manufacturing Quote Request System** built for Advanced Plastiform (AP), ena
 ```
 ┌─────────────────┐
 │   React SPA     │ ← Frontend (Vite dev server / Vercel CDN)
-│  (Port 5173)    │
+│  (Port 3000)    │
 └────────┬────────┘
          │
          ├─── API Calls (fetch)
@@ -484,7 +484,8 @@ Implemented in `Router.tsx` on initial mount.
 npm install
 
 # Start development server
-npm run dev  # → http://localhost:5173
+npm start    # → http://localhost:3000 (Vercel Dev - Recommended)
+npm run dev  # → http://localhost:3000 (Vite only)
 
 # Build for production
 npm run build

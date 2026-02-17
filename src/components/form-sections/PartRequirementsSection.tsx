@@ -21,6 +21,7 @@ export function PartRequirementsSection({
           rows={4}
           value={partNotes}
           onChange={onChange}
+          autoComplete="off"
         />
       </div>
     </div>

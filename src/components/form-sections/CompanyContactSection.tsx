@@ -98,6 +98,7 @@ export function CompanyContactSection({
             placeholder="ABC Corp, Inc."
             value={companyName}
             onChange={onChange}
+            autoComplete="organization"
             className="mt-1.5"
           />
         </div>
@@ -111,6 +112,7 @@ export function CompanyContactSection({
             placeholder="First and Last Name"
             value={contactName}
             onChange={onChange}
+            autoComplete="name"
             className="mt-1.5"
           />
         </div>
@@ -125,6 +127,7 @@ export function CompanyContactSection({
             type="email"
             value={email}
             onChange={onChange}
+            autoComplete="email"
             className="mt-1.5"
           />
         </div>
@@ -139,6 +142,7 @@ export function CompanyContactSection({
             type="tel"
             value={phone}
             onChange={onChange}
+            autoComplete="tel"
             className="mt-1.5"
           />
         </div>

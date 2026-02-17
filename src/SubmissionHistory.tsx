@@ -5,8 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverTrigger, PopoverContent, PopoverOverlay } from '@/components/ui/popover';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { getMachineImage, hasMachineImage } from '@/lib/machine-sprite';
+// FEATURE FLAG: Machine Schedule Insights - Remove these 2 lines to discard spike
+import { isFeatureEnabled } from '@/lib/feature-flags';
+import { MachineScheduleInsights } from '@/components/MachineScheduleInsights';
+// END FEATURE FLAG
 import { 
   Search, 
   Filter, 
@@ -608,6 +612,17 @@ export default function SubmissionHistory() {
                                    );
                                  })()}
 
+                                {/* FEATURE FLAG: Machine Schedule Insights - Remove this entire block to discard spike */}
+                                {isFeatureEnabled('MACHINE_SCHEDULE_INSIGHTS') && 
+                                 submission.machine_matches && 
+                                 submission.machine_matches.length > 0 && (
+                                  <MachineScheduleInsights 
+                                    quoteId={submission.id}
+                                    matchedMachineNames={submission.machine_matches.map(m => m.name)}
+                                  />
+                                )}
+                                {/* END FEATURE FLAG */}
+
                                 {/* Outsourced Steps */}
                                 {submission.outsourced_steps && submission.outsourced_steps.length > 0 && (
                                   <div className="space-y-2">
@@ -771,6 +786,9 @@ export default function SubmissionHistory() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-light text-2xl">Quote Request Details</DialogTitle>
+            <DialogDescription>
+              View complete information for this quote request.
+            </DialogDescription>
           </DialogHeader>
           {selectedSubmissionDetails && (
             <div className="space-y-6 font-sans">

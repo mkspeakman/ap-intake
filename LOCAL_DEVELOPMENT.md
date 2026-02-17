@@ -2,6 +2,20 @@
 
 Complete guide for setting up the AP-AI Manufacturing Quote Request System for local development.
 
+## 🔑 Local Login Credentials
+
+When running locally, use these database test credentials:
+
+- **Email:** `admin@example.com`
+- **Password:** `password123`
+
+Or:
+
+- **Email:** `user@example.com`
+- **Password:** `password123`
+
+> **Note:** If login stalls or hangs, check the browser console for errors. The app uses a 10-second timeout for login requests.
+
 ## Prerequisites
 
 - **Node.js 18+** and npm
@@ -12,32 +26,36 @@ Complete guide for setting up the AP-AI Manufacturing Quote Request System for l
 
 ## Quick Start
 
+You need **two terminal windows** running simultaneously:
+
+### Terminal 1: API Server
 ```bash
-# Clone repository
-git clone <repository-url>
-cd ap-intake
+npm run dev:api
+```
+Starts Vercel serverless functions on **port 3001**
 
-# Install dependencies
-npm install
+### Terminal 2: Frontend
+```bash
+npm start
+```
+Starts Vite dev server on **port 3000** (proxies API to 3001)
 
+**Access at:** http://localhost:3000
+
+**Login with:** `admin@example.com` / `password123`
+
+### Environment Setup (Optional - for new clones)
+
+```bash
 # Install Vercel CLI globally (if not already installed)
 npm install -g vercel
 
-# Link to Vercel project (pulls environment variables)
+# Link to Vercel project and pull environment variables
 vercel link
-
-# Pull environment variables
 vercel env pull
-
-# Start development servers
-# Terminal 1:
-vercel dev
-
-# Terminal 2:
-npm run dev
 ```
 
-Access the application at: http://localhost:5173
+This creates `.env.local` with database credentials. Already configured in this project.
 
 ## Application Architecture
 
@@ -131,42 +149,41 @@ VALUES
   ('admin@example.com', 'password123', 'Test Admin', 'superadmin', true);
 ```
 
-### 3. Development Servers
+### 3. Start Development Servers
 
-You need TWO terminal windows:
+You need **TWO terminal windows** running concurrently:
 
-#### Terminal 1: Vercel Serverless Functions
+#### Terminal 1: Vercel Serverless Functions (API)
 ```bash
-vercel dev
+npm run dev:api
+```
+- Runs on port 3001
+- Provides API endpoints at `/api/*`
+- Database connectivity
+
+#### Terminal 2: Vite Dev Server (Frontend)
+```bash
+npm start
+# or: npm run dev
 ```
 - Runs on port 3000
-- Provides API endpoints
-- Database connectivity
-- Proxy for frontend
-
-#### Terminal 2: Vite Dev Server
-```bash
-npm run dev
-```
-- Runs on port 5173
 - Hot module reloading
 - React app with fast refresh
-- Proxies API requests to port 3000
+- Proxies `/api/*` requests to port 3001
 
-**Ports:**
-- Frontend: http://localhost:5173
-- API: http://localhost:3000
-- Vite auto-proxies `/api/*` to port 3000
+**Access:**
+- Application: http://localhost:3000
+- API (direct): http://localhost:3001/api/*
 
 ### 4. Login and Test
 
-1. Open http://localhost:5173
+1. Open http://localhost:3000
 2. Click user icon in header
-3. Login with test credentials:
-   - Email: `admin@example.com`
-   - Password: `password123`
-4. Verify navigation shows "Users" link (admin access)
-5. Test user management at `/users` route
+3. Login with database credentials:
+   - **Admin:** `admin@example.com` / `password123`
+   - **User:** `user@example.com` / `password123`
+4. Verify authentication and protected routes work
+5. Check `/history` and `/users` pages (if authorized)
 
 ## Development Workflow
 
@@ -233,16 +250,29 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/callback
 
 ## Common Issues
 
+### Login Stalls or Hangs
+
+**Symptoms:** Login button stays in "Signing in..." state indefinitely.
+
+**Solutions:**
+1. Make sure **BOTH** terminals are running:
+   - Terminal 1: `npm run dev:api` (port 3001)
+   - Terminal 2: `npm start` (port 3000)
+2. Check browser console for errors (F12)
+3. Use correct credentials: `admin@example.com` / `password123`
+4. Check Network tab for failed `/api/auth/login` requests
+5. Restart both servers if needed
+
+**Timeout:** Login has a 10-second timeout to prevent infinite hanging.
+
 ### Port Already in Use
 
 ```bash
-# Kill processes on ports
+# Kill process on port 3000
 lsof -ti:3000 | xargs kill -9
-lsof -ti:5173 | xargs kill -9
 
-# Or use different ports
-vite --port 5174
-vercel dev --port 3001
+# Or let Vercel use next available port
+npm start  # Will auto-increment if 3000 is busy
 ```
 
 ### Database Connection Errors

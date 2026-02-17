@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { CheckCircle, AlertCircle, Loader2, Database, Cloud, FileText } from 'lucide-react';
 import type { FileUploadStatus } from './form-sections/FileUploadItem';
@@ -71,6 +71,11 @@ export function SubmissionDialog({
               </>
             )}
           </DialogTitle>
+          <DialogDescription>
+            {step === 'complete' && 'Your quote request has been submitted successfully.'}
+            {step === 'error' && 'There was a problem submitting your request.'}
+            {!isComplete && 'Please wait while we process your submission.'}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">

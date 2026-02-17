@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -151,6 +151,7 @@ export function EditUserModal({ open, onClose, onSuccess, user, userRole, curren
               onChange={(e) => setName(e.target.value)}
               placeholder="Full name"
               required
+              autoComplete="name"
             />
           </div>
 
@@ -162,6 +163,7 @@ export function EditUserModal({ open, onClose, onSuccess, user, userRole, curren
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="Company name (optional)"
+              autoComplete="organization"
             />
           </div>
 
@@ -174,6 +176,7 @@ export function EditUserModal({ open, onClose, onSuccess, user, userRole, curren
               onChange={(e) => setEmail(e.target.value)}
               placeholder="email@example.com"
               required
+              autoComplete="email"
             />
           </div>
 
@@ -185,6 +188,7 @@ export function EditUserModal({ open, onClose, onSuccess, user, userRole, curren
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Phone number (optional)"
+              autoComplete="tel"
             />
           </div>
 
