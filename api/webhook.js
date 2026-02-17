@@ -1,5 +1,3 @@
-import { Readable } from 'stream';
-
 export default async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
@@ -9,14 +7,20 @@ export default async function handler(req, res) {
   try {
     const webhookURL = 'https://speakhost.app.n8n.cloud/webhook/project-submission';
     
-    // Convert request to a readable stream and forward to n8n
+    // Get the raw body as a buffer
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
+    }
+    const body = Buffer.concat(chunks);
+    
+    // Forward to n8n
     const response = await fetch(webhookURL, {
       method: 'POST',
       headers: {
-        'Content-Type': req.headers['content-type'],
+        'Content-Type': req.headers['content-type'] || 'application/json',
       },
-      body: Readable.from(req),
-      duplex: 'half',
+      body: body,
     });
 
     const data = await response.text();
