@@ -244,14 +244,15 @@ ap-intake/
 │   ├── add-test-user-flag.sql # Test user management
 │   ├── add-capability-fields.sql # Equipment matching
 │   └── insert-equipment-postgres.sql # Equipment seed data
-├── email-templates/         # Notification email templates
-│   ├── quote-notification.html  # Responsive HTML template
-│   ├── quote-notification.txt   # Plain text version
-│   ├── sample-data.json         # Example template data
-│   ├── generate-preview.js      # Preview generator script
-│   ├── test-template.js         # Template validation script
-│   ├── n8n-integration-example.js # n8n integration guide
-│   └── README.md                # Full documentation
+├── public/
+│   └── email-templates/     # Notification email templates
+│       ├── quote-notification.html  # Responsive HTML template
+│       ├── quote-notification.txt   # Plain text version
+│       ├── sample-data.json         # Example template data
+│       ├── generate-preview.js      # Preview generator script
+│       ├── test-template.js         # Template validation script
+│       ├── n8n-integration-example.js # n8n integration guide
+│       └── README.md                # Full documentation
 └── vercel.json             # Vercel configuration
 ```
 
@@ -294,13 +295,13 @@ ap-intake/
 Professional HTML email templates are available for notifying Autopilot when new quote requests are submitted.
 
 **Templates included:**
-- `email-templates/quote-notification.html` - Responsive HTML email
-- `email-templates/quote-notification.txt` - Plain text version
-- `email-templates/sample-data.json` - Example data for testing
+- `public/email-templates/quote-notification.html` - Responsive HTML email
+- `public/email-templates/quote-notification.txt` - Plain text version
+- `public/email-templates/sample-data.json` - Example data for testing
 
 **Quick start:**
 ```bash
-cd email-templates
+cd public/email-templates
 
 # Generate preview with sample data
 node generate-preview.js
@@ -322,7 +323,7 @@ node test-template.js
 - AWS SES
 - Nodemailer
 
-See [email-templates/README.md](./email-templates/README.md) for full documentation and integration examples.
+See [public/email-templates/README.md](./public/email-templates/README.md) for full documentation and integration examples.
 
 ## 🧪 Test Data Management
 
